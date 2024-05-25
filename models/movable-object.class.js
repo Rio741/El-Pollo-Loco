@@ -1,15 +1,12 @@
-class MovableObject {
-  x = 120;
-  y = 280;
-  img;
-  height = 150;
-  width = 100;
+class MovableObject extends DrawableObject {
   speed = 0.15;
-  imageCache = {};
   otherDirection;
-  currentImage = 0;
   speedY = 0;
   acceleration = 1.5;
+  energy = 100;
+  collectedCoins = 0;
+  collectedBottles = 19;
+  lastHit = 0;
 
   applyGravity() {
     setInterval(() => {
@@ -24,30 +21,70 @@ class MovableObject {
     return this.y < 135;
   }
 
-  loadImage(path) {
-    this.img = new Image();
-    this.img.src = path;
+  isColliding(mo) {
+    return (
+      this.x + this.width > mo.x &&
+      this.y + this.height > mo.y &&
+      this.x < mo.x &&
+      this.y < mo.y + mo.height
+    );
   }
 
-  loadImages(arr) {
-    arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path] = img;
-    });
+  hit() {
+    this.energy -= 5;
+    if (this.energy < 0) {
+      this.energy = 0;
+    } else {
+      this.lastHit = new Date().getTime();
+    }
+  }
+
+  collectCoin() {
+    this.collectedCoins++;
+  }
+
+  collectBottle() {
+    this.collectedBottles += 19;
+    if (this.collectedBottles > 100) {
+      this.collectedBottles = 100;
+    }
+  }
+
+  isHurt() {
+    let timepassed = new Date().getTime() - this.lastHit;
+    timepassed = timepassed / 1000;
+    return timepassed < 1;
+  }
+
+  isDead() {
+    return this.energy == 0;
+  }
+
+  isSleep() {
+    let timepassed = new Date().getTime() - this.lastMoved;
+    timepassed = timepassed / 1000;
+    return timepassed > 5;
   }
 
   playAnimation(images) {
-    let i = this.currentImage % this.IMAGES_WALKING.length;
+    let i = this.currentImage % images.length;
     let path = images[i];
     this.img = this.imageCache[path];
     this.currentImage++;
   }
 
-  moveRight() {}
+  moveRight() {
+    this.x += this.speed;
+    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
+  }
+
   moveLeft() {
-    setInterval(() => {
-      this.x -= this.speed;
-    }, 1000 / 60); // Ändere die x-Koordinate, um die Wolke nach links zu bewegen
+    this.x -= this.speed;
+    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
+  }
+
+  jump() {
+    this.speedY = 20;
+    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
   }
 }
