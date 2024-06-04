@@ -9,6 +9,7 @@ class World {
   healthStatusBar = new StatusBar(StatusBar.HEALTH_IMAGES, 10, 35);
   coinStatusBar = new StatusBar(StatusBar.COIN_IMAGES, 10, 70);
   endbossStatusBar = new StatusBar(StatusBar.ENDBOSS_IMAGES, 540, 10);
+  throwableObjects = [];
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -16,40 +17,78 @@ class World {
     this.keyboard = keyboard;
     this.draw();
     this.setWorld();
-    this.checkCollisions();
+    this.run();
   }
 
   setWorld() {
     this.character.world = this;
   }
 
-  checkCollisions() {
+  run() {
     setInterval(() => {
-      // Überprüfung der Kollisionen mit Feinden
-      this.level.enemies.forEach((enemy) => {
-        if (this.character.isColliding(enemy)) {
-          this.character.hit();
-          this.healthStatusBar.setPercentage(this.character.energy);
-        }
-      });
-
-      // Überprüfung der Kollisionen mit Gegenständen
-      this.level.items.forEach((item, index) => {
-        if (this.character.isColliding(item)) {
-          if (item instanceof Coin) {
-            this.character.collectCoin();
-            let coinPercentage =
-              (this.character.collectedCoins / this.level.totalCoins) * 100;
-            this.coinStatusBar.setPercentage(coinPercentage);
-            this.level.items.splice(index, 1); // Entferne die Münze
-          } else if (item instanceof Bottle) {
-            this.character.collectBottle();
-            this.bottleStatusBar.setPercentage(this.character.collectedBottles);
-            this.level.items.splice(index, 1);
-          }
-        }
-      });
+      this.checkEnemyCollisions();
+      this.checkItemCollisions();
+      this.checkThrowObjects();
     }, 200);
+  }
+
+  checkThrowObjects() {
+    if (this.keyboard.D && this.character.collectedBottles > 0) {
+      let bottle = new ThrowableObject(
+        this.character.x + 100,
+        this.character.y + 100
+      );
+      this.throwableObjects.push(bottle);
+      let bottlePercentage = (this.character.collectedBottles / 5) * 100;
+      this.character.collectedBottles--;
+      this.bottleStatusBar.setPercentage(bottlePercentage);
+    }
+  }
+
+  checkEnemyCollisions() {
+    this.level.enemies.forEach((enemy) => {
+      if (this.character.isColliding(enemy)) {
+        this.handleEnemyCollision();
+      }
+    });
+  }
+
+  checkItemCollisions() {
+    this.level.items.forEach((item, index) => {
+      if (this.character.isColliding(item)) {
+        this.handleItemCollision(item, index);
+      }
+    });
+  }
+
+  handleEnemyCollision() {
+    this.character.hit();
+    this.healthStatusBar.setPercentage(this.character.energy);
+  }
+
+  handleItemCollision(item, index) {
+    if (item instanceof Coin) {
+      this.collectCoin(index);
+    } else if (item instanceof Bottle) {
+      this.collectBottle(index);
+    }
+  }
+
+  collectCoin(index) {
+    this.character.incrementCoinCount();
+    let coinPercentage =
+      (this.character.collectedCoins / this.level.totalCoins) * 100;
+    this.coinStatusBar.setPercentage(coinPercentage);
+    this.level.items.splice(index, 1); // Entferne die Münze
+  }
+
+  collectBottle(index) {
+    if (this.character.collectedBottles < 5) {
+      this.character.incrementBottleCount();
+      let bottlePercentage = this.character.collectedBottles * 21; // Umrechnung auf Prozentwert (5 Flaschen max)
+      this.bottleStatusBar.setPercentage(bottlePercentage);
+      this.level.items.splice(index, 1); // Entferne die Flasche
+    }
   }
 
   draw() {
@@ -67,6 +106,9 @@ class World {
     this.addToMap(this.endbossStatusBar);
     this.ctx.translate(this.camera_x, 0);
     let self = this;
+    this.throwableObjects.forEach((obj) => {
+      this.addToMap(obj);
+    });
     this.ctx.translate(-this.camera_x, 0);
     requestAnimationFrame(function () {
       self.draw();

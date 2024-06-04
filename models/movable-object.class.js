@@ -5,7 +5,7 @@ class MovableObject extends DrawableObject {
   acceleration = 1.5;
   energy = 100;
   collectedCoins = 0;
-  collectedBottles = 19;
+  collectedBottles = 0;
   lastHit = 0;
 
   applyGravity() {
@@ -18,7 +18,11 @@ class MovableObject extends DrawableObject {
   }
 
   isAboveGround() {
-    return this.y < 135;
+    if (this instanceof ThrowableObject) {
+      return true;
+    } else {
+      return this.y < 135;
+    }
   }
 
   isColliding(mo) {
@@ -39,14 +43,14 @@ class MovableObject extends DrawableObject {
     }
   }
 
-  collectCoin() {
+  incrementCoinCount() {
     this.collectedCoins++;
   }
 
-  collectBottle() {
-    this.collectedBottles += 19;
-    if (this.collectedBottles > 100) {
-      this.collectedBottles = 100;
+  incrementBottleCount() {
+    this.collectedBottles++;
+    if (this.collectedBottles > 5) {
+      this.collectedBottles = 5; // Maximal 5 Flaschen
     }
   }
 
@@ -72,6 +76,16 @@ class MovableObject extends DrawableObject {
     this.img = this.imageCache[path];
     this.currentImage++;
   }
+
+  /*playAnimation(images) {
+    let i = this.currentImage % images.length;
+    if (i < images.length - 1) {
+      let path = images[i];
+      this.img = this.imageCache[path];
+      this.currentImage++;
+    }
+  }
+*/
 
   moveRight() {
     this.x += this.speed;
