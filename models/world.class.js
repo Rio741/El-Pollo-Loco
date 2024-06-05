@@ -29,20 +29,39 @@ class World {
       this.checkEnemyCollisions();
       this.checkItemCollisions();
       this.checkThrowObjects();
+      this.checkThrowableCollisions(); // Hinzufügen der Kollisionsprüfung für die geworfenen Objekte
     }, 200);
   }
 
   checkThrowObjects() {
     if (this.keyboard.D && this.character.collectedBottles > 0) {
+      let bottleDirection = this.character.otherDirection ? "left" : "right";
       let bottle = new ThrowableObject(
-        this.character.x + 100,
-        this.character.y + 100
+        this.character.x + (bottleDirection === "right" ? 100 : -40),
+        this.character.y + 100,
+        bottleDirection
       );
       this.throwableObjects.push(bottle);
       let bottlePercentage = (this.character.collectedBottles / 5) * 100;
       this.character.collectedBottles--;
       this.bottleStatusBar.setPercentage(bottlePercentage);
     }
+  }
+
+  checkThrowableCollisions() {
+    this.throwableObjects.forEach((bottle) => {
+      if (!bottle.isUsed) {
+        // Nur nicht verwendete Flaschen überprüfen
+        this.level.enemies.forEach((enemy) => {
+          if (bottle.isColliding(enemy)) {
+            if (enemy instanceof Chicken || enemy instanceof BabyChicken) {
+              enemy.die();
+              bottle.markAsUsed();
+            }
+          }
+        });
+      }
+    });
   }
 
   checkEnemyCollisions() {
