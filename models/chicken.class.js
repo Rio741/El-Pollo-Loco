@@ -1,7 +1,7 @@
 class Chicken extends MovableObject {
-  y = 335;
-  height = 90;
-  width = 90;
+  y = 340;
+  height = 80;
+  width = 80;
   IMAGES_WALKING = [
     "img/3_enemies_chicken/chicken_normal/1_walk/1_w.png",
     "img/3_enemies_chicken/chicken_normal/1_walk/2_w.png",
@@ -39,5 +39,15 @@ class Chicken extends MovableObject {
   die() {
     this.isDead = true;
     this.loadImage(this.IMAGES_DEAD[0]); // Totes Bild laden
+    setTimeout(() => {
+      this.removeFromWorld();
+    }, 1000); // Entferne den Feind nach 1 Sekunde
+  }
+
+  removeFromWorld() {
+    const index = this.world.level.enemies.indexOf(this);
+    if (index > -1) {
+      this.world.level.enemies.splice(index, 1);
+    }
   }
 }

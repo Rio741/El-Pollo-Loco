@@ -34,6 +34,15 @@ class MovableObject extends DrawableObject {
     );
   }
 
+  isCharacterColliding(mo) {
+    return (
+      this.x + 25 < mo.x + mo.width &&
+      this.x + this.width - 35 > mo.x &&
+      this.y + 110 < mo.y + mo.height &&
+      this.y + this.height - 10 > mo.y
+    );
+  }
+
   /*
   isColliding(mo) {
     return (
@@ -111,5 +120,17 @@ class MovableObject extends DrawableObject {
   jump() {
     this.speedY = 20;
     this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
+  }
+
+  isJumpingOn(mo) {
+    return (
+      this.speedY < 0 && // Der Charakter fällt gerade nach unten
+      this.y + this.height >= mo.y && // Der Charakter ist im Bereich des Feindes
+      this.y + this.height <= mo.y + mo.height / 2
+    ); // Der Charakter befindet sich oberhalb der Mitte des Feindes
+  }
+
+  bounceOff() {
+    this.speedY = 15; // Der Charakter springt leicht ab, wenn er auf einen Feind trifft
   }
 }

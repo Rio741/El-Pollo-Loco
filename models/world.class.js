@@ -22,6 +22,7 @@ class World {
 
   setWorld() {
     this.character.world = this;
+    this.level.enemies.forEach((enemy) => (enemy.world = this)); // Weisen Sie allen Feinden die Welt zu
   }
 
   run() {
@@ -30,7 +31,20 @@ class World {
       this.checkItemCollisions();
       this.checkThrowObjects();
       this.checkThrowableCollisions(); // Hinzufügen der Kollisionsprüfung für die geworfenen Objekte
-    }, 200);
+      this.checkJumpOnEnemies(); // Neue Methode zum Überprüfen von Sprüngen auf Gegner
+    }, 50);
+  }
+
+  checkJumpOnEnemies() {
+    this.level.enemies.forEach((enemy) => {
+      if (
+        this.character.isCharacterColliding(enemy) &&
+        this.character.isJumpingOn(enemy)
+      ) {
+        enemy.die();
+        this.character.bounceOff(); // Neue Methode, um dem Charakter einen kleinen Aufprall-Effekt zu geben
+      }
+    });
   }
 
   checkThrowObjects() {
@@ -66,7 +80,7 @@ class World {
 
   checkEnemyCollisions() {
     this.level.enemies.forEach((enemy) => {
-      if (this.character.isColliding(enemy)) {
+      if (this.character.isCharacterColliding(enemy)) {
         this.handleEnemyCollision();
       }
     });
@@ -74,7 +88,7 @@ class World {
 
   checkItemCollisions() {
     this.level.items.forEach((item, index) => {
-      if (this.character.isColliding(item)) {
+      if (this.character.isCharacterColliding(item)) {
         this.handleItemCollision(item, index);
       }
     });

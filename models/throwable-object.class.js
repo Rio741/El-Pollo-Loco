@@ -23,8 +23,8 @@ class ThrowableObject extends MovableObject {
     this.x = x;
     this.y = y;
     this.direction = direction;
-    this.height = 60;
-    this.width = 60;
+    this.height = 70;
+    this.width = 70;
     this.isUsed = false; // Markierung, ob die Flasche bereits eine Kollision verursacht hat
     this.throw();
   }

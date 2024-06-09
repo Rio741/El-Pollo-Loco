@@ -17,18 +17,31 @@ class DrawableObject {
   }
 
   drawFrame(ctx) {
-    if (
-      this instanceof Character ||
+    if (this instanceof Character) {
+      this.drawCharacterFrame(ctx);
+    } else if (
       this instanceof Chicken ||
       this instanceof BabyChicken ||
       this instanceof Endboss
     ) {
-      ctx.beginPath();
-      ctx.lineWidth = "3";
-      ctx.strokeStyle = "blue";
-      ctx.rect(this.x, this.y, this.width, this.height);
-      ctx.stroke();
+      this.drawEnemyFrame(ctx);
     }
+  }
+
+  drawCharacterFrame(ctx) {
+    ctx.beginPath();
+    ctx.lineWidth = "3";
+    ctx.strokeStyle = "blue";
+    ctx.rect(this.x + 25, this.y + 110, this.width - 60, this.height - 120);
+    ctx.stroke();
+  }
+
+  drawEnemyFrame(ctx) {
+    ctx.beginPath();
+    ctx.lineWidth = "3";
+    ctx.strokeStyle = "blue";
+    ctx.rect(this.x, this.y, this.width, this.height);
+    ctx.stroke();
   }
 
   loadImages(arr) {

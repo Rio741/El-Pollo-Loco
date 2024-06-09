@@ -1,6 +1,6 @@
 class Bottle extends MovableObject {
-  height = 90;
-  width = 90;
+  height = 70;
+  width = 70;
   IMAGES_WALKING = [
     "img/6_salsa_bottle/1_salsa_bottle_on_ground.png",
     "img/6_salsa_bottle/2_salsa_bottle_on_ground.png",

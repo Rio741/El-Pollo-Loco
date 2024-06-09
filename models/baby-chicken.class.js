@@ -1,7 +1,7 @@
 class BabyChicken extends MovableObject {
-  y = 360;
-  height = 60;
-  width = 60;
+  y = 368;
+  height = 48;
+  width = 48;
   IMAGES_WALKING = [
     "img/3_enemies_chicken/chicken_small/1_walk/1_w.png",
     "img/3_enemies_chicken/chicken_small/1_walk/2_w.png",
@@ -38,5 +38,15 @@ class BabyChicken extends MovableObject {
   die() {
     this.isDead = true;
     this.loadImage(this.IMAGES_DEAD[0]); // Totes Bild laden
+    setTimeout(() => {
+      this.removeFromWorld();
+    }, 1000); // Entferne den Feind nach 1 Sekunde
+  }
+
+  removeFromWorld() {
+    const index = this.world.level.enemies.indexOf(this);
+    if (index > -1) {
+      this.world.level.enemies.splice(index, 1);
+    }
   }
 }
