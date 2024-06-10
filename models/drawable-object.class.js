@@ -19,7 +19,11 @@ class DrawableObject {
   drawFrame(ctx) {
     if (this instanceof Character) {
       this.drawCharacterFrame(ctx);
-    } else if (
+    } /* else if (this instanceof Bottle) {
+      this.drawBottleFrame(ctx);
+    } else if (this instanceof Coin) {
+      this.drawCoinFrame(ctx);
+    }*/ else if (
       this instanceof Chicken ||
       this instanceof BabyChicken ||
       this instanceof Endboss
@@ -32,15 +36,31 @@ class DrawableObject {
     ctx.beginPath();
     ctx.lineWidth = "3";
     ctx.strokeStyle = "blue";
-    ctx.rect(this.x + 25, this.y + 110, this.width - 60, this.height - 120);
+    ctx.rect(this.x + 25, this.y + 110, this.width - 35, this.height - 120);
+    ctx.stroke();
+  }
+  /*
+  drawBottleFrame(ctx) {
+    ctx.beginPath();
+    ctx.lineWidth = "3";
+    ctx.strokeStyle = "green";
+    ctx.rect(this.x + 20, this.y + 10, this.width - 30, this.height - 15);
     ctx.stroke();
   }
 
+  drawCoinFrame(ctx) {
+    ctx.beginPath();
+    ctx.lineWidth = "3";
+    ctx.strokeStyle = "yellow";
+    ctx.rect(this.x + 40, this.y + 40, this.width - 80, this.height - 80);
+    ctx.stroke();
+  }
+*/
   drawEnemyFrame(ctx) {
     ctx.beginPath();
     ctx.lineWidth = "3";
-    ctx.strokeStyle = "blue";
-    ctx.rect(this.x, this.y, this.width, this.height);
+    ctx.strokeStyle = "red";
+    ctx.rect(this.x + 5, this.y, this.width - 10, this.height - 10);
     ctx.stroke();
   }
 

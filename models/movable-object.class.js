@@ -2,12 +2,13 @@ class MovableObject extends DrawableObject {
   speed = 0.15;
   otherDirection;
   speedY = 0;
-  acceleration = 1.5;
+  acceleration = 2.4;
   energy = 100;
   collectedCoins = 0;
   collectedBottles = 0;
   lastHit = 0;
 
+  // NUR FLASCHEN !!!
   applyGravity() {
     setInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
@@ -19,28 +20,42 @@ class MovableObject extends DrawableObject {
 
   isAboveGround() {
     if (this instanceof ThrowableObject) {
-      return true;
+      return this.y < 340; // fuer flasche fallstop
     } else {
       return this.y < 135;
     }
   }
 
   isColliding(mo) {
-    return (
-      this.x < mo.x + mo.width &&
-      this.x + this.width > mo.x &&
-      this.y < mo.y + mo.height &&
-      this.y + this.height > mo.y
-    );
-  }
-
-  isCharacterColliding(mo) {
-    return (
-      this.x + 25 < mo.x + mo.width &&
-      this.x + this.width - 35 > mo.x &&
-      this.y + 110 < mo.y + mo.height &&
-      this.y + this.height - 10 > mo.y
-    );
+    if (this instanceof Character) {
+      return (
+        this.x + 25 < mo.x + mo.width &&
+        this.x + this.width - 35 > mo.x &&
+        this.y + 145 < mo.y + mo.height &&
+        this.y + this.height + 15 > mo.y
+      );
+    } else if (this instanceof Bottle) {
+      return (
+        this.x + 20 < mo.x + mo.width &&
+        this.x + this.width - 30 > mo.x &&
+        this.y + 10 < mo.y + mo.height &&
+        this.y + this.height - 15 > mo.y
+      );
+    } else if (this instanceof Coin) {
+      return (
+        this.x + 40 < mo.x + mo.width &&
+        this.x + this.width - 80 > mo.x &&
+        this.y + 40 < mo.y + mo.height &&
+        this.y + this.height - 80 > mo.y
+      );
+    } else {
+      return (
+        this.x + 5 < mo.x + mo.width &&
+        this.x + this.width - 10 > mo.x &&
+        this.y < mo.y + mo.height &&
+        this.y + this.height - 10 > mo.y
+      );
+    }
   }
 
   /*
@@ -118,7 +133,7 @@ class MovableObject extends DrawableObject {
   }
 
   jump() {
-    this.speedY = 20;
+    this.speedY = 28;
     this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
   }
 
@@ -131,6 +146,6 @@ class MovableObject extends DrawableObject {
   }
 
   bounceOff() {
-    this.speedY = 15; // Der Charakter springt leicht ab, wenn er auf einen Feind trifft
+    this.speedY = 23; // Der Charakter springt leicht ab, wenn er auf einen Feind trifft
   }
 }

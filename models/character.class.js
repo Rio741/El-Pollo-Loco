@@ -100,8 +100,24 @@ class Character extends MovableObject {
       } else {
         if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
           this.playAnimation(this.IMAGES_WALKING);
+        } else {
+          this.loadImage(this.IMAGES_JUMPING[0]); // Erstes Bild der Laufanimation
         }
       }
     }, 100);
+  }
+  applyGravity() {
+    setInterval(() => {
+      if (this.isAboveGround() || this.speedY > 0) {
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
+
+        if (this.y > 135) {
+          // Überprüfen Sie, ob der Charakter unter 135 ist
+          this.y = 135; // Setzen Sie die Position auf 135 zurück
+          this.speedY = 0; // Setzen Sie die vertikale Geschwindigkeit auf 0 zurück, um das Fallen zu stoppen
+        }
+      }
+    }, 1000 / 25);
   }
 }

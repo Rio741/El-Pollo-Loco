@@ -38,7 +38,7 @@ class World {
   checkJumpOnEnemies() {
     this.level.enemies.forEach((enemy) => {
       if (
-        this.character.isCharacterColliding(enemy) &&
+        this.character.isColliding(enemy) &&
         this.character.isJumpingOn(enemy)
       ) {
         enemy.die();
@@ -80,7 +80,7 @@ class World {
 
   checkEnemyCollisions() {
     this.level.enemies.forEach((enemy) => {
-      if (this.character.isCharacterColliding(enemy)) {
+      if (this.character.isColliding(enemy)) {
         this.handleEnemyCollision();
       }
     });
@@ -88,7 +88,7 @@ class World {
 
   checkItemCollisions() {
     this.level.items.forEach((item, index) => {
-      if (this.character.isCharacterColliding(item)) {
+      if (this.character.isColliding(item)) {
         this.handleItemCollision(item, index);
       }
     });
