@@ -23,29 +23,72 @@ class ThrowableObject extends MovableObject {
     this.x = x;
     this.y = y;
     this.direction = direction;
+    this.world = world; // Referenz auf die Welt hinzufügen
     this.height = 70;
     this.width = 70;
     this.isUsed = false; // Markierung, ob die Flasche bereits eine Kollision verursacht hat
+    this.throwInterval = null;
     this.throw();
   }
 
   throw() {
     this.speedY = 25;
     this.applyGravity();
-    setInterval(() => {
+    this.throwInterval = setInterval(() => {
       if (this.direction === "right") {
-        this.x += 5;
+        this.x += 7;
       } else {
-        this.x -= 5;
+        this.x -= 7;
       }
     }, 25);
     this.animateThrowingBottle();
   }
 
   animateThrowingBottle() {
-    setInterval(() => {
-      this.playAnimation(this.BOTTLE_ROTATION_IMAGES);
+    const intervalId = setInterval(() => {
+      if (this.isUsed) {
+        clearInterval(intervalId);
+        this.animateSplashingBottle();
+      } else {
+        this.playAnimation(this.BOTTLE_ROTATION_IMAGES);
+      }
     }, 100);
+  }
+  remove() {
+    this.world.removeObject(this); // Entferne das Objekt aus der Welt
+  }
+
+  animateSplashingBottle() {
+    clearInterval(this.throwInterval);
+    this.throwInterval = null;
+    this.loadImages(this.BOTTLE_SPLASHING_IMAGES);
+
+    // Intervall für die Animation in Millisekunden festlegen (hier 100ms)
+    const animationInterval = 100;
+
+    let currentFrame = 0;
+    const totalFrames = this.BOTTLE_SPLASHING_IMAGES.length;
+
+    const intervalId = setInterval(() => {
+      if (currentFrame >= totalFrames) {
+        clearInterval(intervalId);
+        this.remove(); // Entferne das Objekt nach der Splash-Animation
+      } else {
+        this.playAnimationFrame(this.BOTTLE_SPLASHING_IMAGES[currentFrame]);
+        currentFrame++;
+      }
+    }, animationInterval);
+  }
+
+  playAnimationFrame(imagePath) {
+    this.img = this.imageCache[imagePath];
+  }
+
+  onGround() {
+    if (!this.isUsed) {
+      this.markAsUsed();
+      this.animateSplashingBottle();
+    }
   }
 
   markAsUsed() {

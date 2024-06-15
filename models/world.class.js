@@ -78,6 +78,18 @@ class World {
     });
   }
 
+  removeObject(object) {
+    const index = this.throwableObjects.indexOf(object);
+    if (index > -1) {
+      this.throwableObjects.splice(index, 1);
+    }
+  }
+
+  addThrowableObject(throwableObject) {
+    throwableObject.world = this; // Referenz zur Welt setzen
+    this.throwableObjects.push(throwableObject);
+  }
+
   checkEnemyCollisions() {
     this.level.enemies.forEach((enemy) => {
       if (this.character.isColliding(enemy)) {
