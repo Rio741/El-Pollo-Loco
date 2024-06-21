@@ -2,7 +2,7 @@ class Character extends MovableObject {
   y = 35;
   height = 300;
   width = 140;
-  speed = 5;
+  speed = 6;
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -52,9 +52,22 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/idle/I-10.png",
   ];
 
-  currentImage = 0;
-  world;
+  IMAGES_LONG_SLEEP = [
+    "img/2_character_pepe/1_idle/long_idle/I-11.png",
+    "img/2_character_pepe/1_idle/long_idle/I-12.png",
+    "img/2_character_pepe/1_idle/long_idle/I-13.png",
+    "img/2_character_pepe/1_idle/long_idle/I-14.png",
+    "img/2_character_pepe/1_idle/long_idle/I-15.png",
+    "img/2_character_pepe/1_idle/long_idle/I-16.png",
+    "img/2_character_pepe/1_idle/long_idle/I-17.png",
+    "img/2_character_pepe/1_idle/long_idle/I-18.png",
+    "img/2_character_pepe/1_idle/long_idle/I-19.png",
+    "img/2_character_pepe/1_idle/long_idle/I-20.png",
+  ];
+
   walking_sound = new Audio("audio/running.mp3");
+  jumpSound = new Audio("audio/jump.mp3");
+  hurtSound = new Audio("audio/hurt.mp3");
 
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
@@ -63,49 +76,126 @@ class Character extends MovableObject {
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_HURT);
     this.loadImages(this.IMAGES_SLEEP);
+    this.loadImages(this.IMAGES_LONG_SLEEP);
     this.applyGravity();
     this.animate();
   }
 
   animate() {
+    this.animateMovement();
+    this.animateDead();
+    this.animateSleep();
+    this.animateLongSleep();
+    this.animateHurt();
+    this.animateJump();
+    this.animateWalk();
+  }
+
+  animateMovement() {
     setInterval(() => {
       this.walking_sound.pause();
-      if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-        this.moveRight();
-        this.otherDirection = false;
-        this.walking_sound.play();
-      }
-      if (this.world.keyboard.LEFT && this.x > -100) {
-        this.moveLeft();
-        this.otherDirection = true;
-        this.walking_sound.play();
-      }
-
-      if (this.world.keyboard.SPACE && !this.isAboveGround()) {
-        this.jump();
-      }
-
-      this.world.camera_x = -this.x + 100;
+      this.handleRightMovement();
+      this.handleLeftMovement();
+      this.handleJump();
+      this.updateCameraPosition();
     }, 1000 / 60);
+  }
 
+  handleRightMovement() {
+    if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+      this.moveRight();
+      this.otherDirection = false;
+      this.walking_sound.play();
+      this.sleepAnimationPlayed = false;
+    }
+  }
+
+  handleLeftMovement() {
+    if (this.world.keyboard.LEFT && this.x > -100) {
+      this.moveLeft();
+      this.otherDirection = true;
+      this.walking_sound.play();
+      this.sleepAnimationPlayed = false;
+    }
+  }
+
+  handleJump() {
+    if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+      this.jump();
+      this.sleepAnimationPlayed = false;
+    }
+  }
+
+  updateCameraPosition() {
+    this.world.camera_x = -this.x + 100;
+  }
+
+  animateDead() {
     setInterval(() => {
       if (this.isDead()) {
         this.playAnimation(this.IMAGES_DEAD);
-      } else if (this.isSleep()) {
-        this.playAnimation(this.IMAGES_SLEEP);
-      } else if (this.isHurt()) {
-        this.playAnimation(this.IMAGES_HURT);
-      } else if (this.isAboveGround()) {
-        this.playAnimation(this.IMAGES_JUMPING);
-      } else {
-        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
-          this.playAnimation(this.IMAGES_WALKING);
-        } else {
-          this.loadImage(this.IMAGES_JUMPING[0]); // Erstes Bild der Laufanimation
-        }
       }
     }, 100);
   }
+
+  animateSleep() {
+    let sleepAnimationIndex = 0;
+    setInterval(() => {
+      if (this.isSleep()) {
+        if (!this.sleepAnimationPlayed) {
+          let path = this.IMAGES_SLEEP[sleepAnimationIndex];
+          this.img = this.imageCache[path];
+          sleepAnimationIndex++;
+          if (sleepAnimationIndex >= this.IMAGES_SLEEP.length) {
+            this.sleepAnimationPlayed = true;
+            sleepAnimationIndex = 0;
+          }
+        }
+      }
+    }, 400);
+  }
+
+  animateLongSleep() {
+    setInterval(() => {
+      if (this.isSleep() && this.sleepAnimationPlayed) {
+        this.playAnimation(this.IMAGES_LONG_SLEEP);
+      }
+    }, 200);
+  }
+
+  animateHurt() {
+    setInterval(() => {
+      if (this.isHurt()) {
+        this.playAnimation(this.IMAGES_HURT);
+      }
+    }, 100);
+  }
+
+  animateJump() {
+    setInterval(() => {
+      if (this.isAboveGround()) {
+        this.playAnimation(this.IMAGES_JUMPING);
+      }
+    }, 130);
+  }
+
+  animateWalk() {
+    setInterval(() => {
+      if (
+        !this.isDead() &&
+        !this.isSleep() &&
+        !this.isHurt() &&
+        !this.isAboveGround()
+      ) {
+        if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+          this.playAnimation(this.IMAGES_WALKING);
+        } else {
+          this.loadImage(this.IMAGES_JUMPING[0]);
+        }
+      }
+    }, 80);
+  }
+
   applyGravity() {
     setInterval(() => {
       if (this.isAboveGround() || this.speedY > 0) {
@@ -113,9 +203,8 @@ class Character extends MovableObject {
         this.speedY -= this.acceleration;
 
         if (this.y > 135) {
-          // Überprüfen Sie, ob der Charakter unter 135 ist
-          this.y = 135; // Setzen Sie die Position auf 135 zurück
-          this.speedY = 0; // Setzen Sie die vertikale Geschwindigkeit auf 0 zurück, um das Fallen zu stoppen
+          this.y = 135;
+          this.speedY = 0;
         }
       }
     }, 1000 / 25);

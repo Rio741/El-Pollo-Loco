@@ -15,6 +15,9 @@ class ThrowableObject extends MovableObject {
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
   ];
 
+  throwSound = new Audio("audio/spin-l.mp3");
+  splashSound = new Audio("audio/splash.mp3");
+
   constructor(x, y, direction) {
     super().loadImage(
       "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png"
@@ -32,13 +35,14 @@ class ThrowableObject extends MovableObject {
   }
 
   throw() {
-    this.speedY = 25;
+    this.speedY = 30;
     this.applyGravity();
+    this.throwSound.play(); // Sound beim Werfen abspielen
     this.throwInterval = setInterval(() => {
       if (this.direction === "right") {
-        this.x += 7;
+        this.x += 9;
       } else {
-        this.x -= 7;
+        this.x -= 9;
       }
     }, 25);
     this.animateThrowingBottle();
@@ -59,13 +63,14 @@ class ThrowableObject extends MovableObject {
   }
 
   animateSplashingBottle() {
+    this.throwSound.pause();
+    this.splashSound.play(); // Splash-Sound abspielen
     clearInterval(this.throwInterval);
     this.throwInterval = null;
     this.loadImages(this.BOTTLE_SPLASHING_IMAGES);
 
     // Intervall für die Animation in Millisekunden festlegen (hier 100ms)
     const animationInterval = 100;
-
     let currentFrame = 0;
     const totalFrames = this.BOTTLE_SPLASHING_IMAGES.length;
 

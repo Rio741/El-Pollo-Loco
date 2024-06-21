@@ -25,7 +25,23 @@
   </head>
   <body onload="init()">
     <h1>El Pollo Loco</h1>
+    <audio id="startMusic" src="audio/startmusic.mp3" loop></audio>
+    <audio id="backgroundMusic" src="audio/background-mp3.mp3" loop></audio>
+
+    <div id="startScreen">
+      <img
+        class="start-screen"
+        src="img/9_intro_outro_screens/start/startscreen_1.png"
+        alt="Start Screen"
+      />
+    </div>
 
     <canvas id="canvas" width="720px" height="480px"></canvas>
+    <img
+      onclick="startGame()"
+      id="play-btn"
+      src="img/icons/play-btn.png"
+      alt="PLAY"
+    />
   </body>
 </html>

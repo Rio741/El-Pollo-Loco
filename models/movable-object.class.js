@@ -2,11 +2,13 @@ class MovableObject extends DrawableObject {
   speed = 0.15;
   otherDirection;
   speedY = 0;
-  acceleration = 2.4;
+  acceleration = 3.2;
   energy = 100;
   collectedCoins = 0;
   collectedBottles = 0;
   lastHit = 0;
+  sleepAnimationPlayed = false;
+  isEnemyDead;
 
   // NUR FLASCHEN !!!
   applyGravity() {
@@ -34,7 +36,7 @@ class MovableObject extends DrawableObject {
         this.x + 25 < mo.x + mo.width &&
         this.x + this.width - 35 > mo.x &&
         this.y + 145 < mo.y + mo.height &&
-        this.y + this.height + 15 > mo.y
+        this.y + this.height + 13 > mo.y
       );
     } else if (this instanceof Bottle) {
       return (
@@ -50,6 +52,13 @@ class MovableObject extends DrawableObject {
         this.y + 40 < mo.y + mo.height &&
         this.y + this.height - 80 > mo.y
       );
+    } else if (this instanceof Endboss) {
+      return (
+        this.x + 40 < mo.x + mo.width &&
+        this.x + this.width - 50 > mo.x &&
+        this.y + 80 < mo.y + mo.height &&
+        this.y + this.height - 130 > mo.y
+      );
     } else {
       return (
         this.x + 5 < mo.x + mo.width &&
@@ -60,23 +69,13 @@ class MovableObject extends DrawableObject {
     }
   }
 
-  /*
-  isColliding(mo) {
-    return (
-      this.x + this.width > mo.x &&
-      this.y + this.height > mo.y &&
-      this.x < mo.x &&
-      this.y < mo.y + mo.height
-    );
-  }
-  */
-
   hit() {
-    this.energy -= 5;
+    this.energy -= 20;
     if (this.energy < 0) {
       this.energy = 0;
     } else {
       this.lastHit = new Date().getTime();
+      this.hurtSound.play(); // Sound beim Treffer abspielen
     }
   }
 
@@ -98,20 +97,55 @@ class MovableObject extends DrawableObject {
   }
 
   isDead() {
-    return this.energy == 0;
+    if (this.energy == 0) {
+      this.endGame(); // Beende das Spiel
+      return true;
+    }
+    return false;
+  }
+  endGame() {
+    // Stoppe alle Intervalle
+    let highestIntervalId = setInterval(() => {}, 10000);
+    for (let i = 0; i < highestIntervalId; i++) {
+      clearInterval(i);
+    }
+
+    // Pausiere alle Töne
+    let sounds = document.querySelectorAll("audio");
+    sounds.forEach((sound) => {
+      sound.pause();
+      this.walking_sound.pause();
+      sound.currentTime = 0; // Setze den Ton zurück
+    });
+
+    // Füge das Game Over-Bild hinzu
+    const gameOverImg = document.createElement("img");
+    gameOverImg.src = "img/9_intro_outro_screens/game_over/game over.png";
+    gameOverImg.id = "game-over-img";
+    document.body.appendChild(gameOverImg);
   }
 
   isSleep() {
     let timepassed = new Date().getTime() - this.lastMoved;
     timepassed = timepassed / 1000;
-    return timepassed > 5;
+    return timepassed > 3;
   }
 
-  playAnimation(images) {
-    let i = this.currentImage % images.length;
-    let path = images[i];
-    this.img = this.imageCache[path];
-    this.currentImage++;
+  playAnimation(images, playOnce = false) {
+    if (playOnce) {
+      if (this.currentImage < images.length) {
+        let path = images[this.currentImage];
+        this.img = this.imageCache[path];
+        this.currentImage++;
+      } else {
+        this.currentImage = images.length - 1; // Stop at the last image
+      }
+    } else {
+      let i = this.currentImage % images.length;
+      let path = images[i];
+      this.img = this.imageCache[path];
+      this.currentImage++;
+    }
   }
 
   /*playAnimation(images) {
@@ -135,16 +169,17 @@ class MovableObject extends DrawableObject {
   }
 
   jump() {
-    this.speedY = 28;
+    this.jumpSound.play();
+    this.speedY = 32;
     this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
   }
 
   isJumpingOn(mo) {
     return (
       this.speedY < 0 && // Der Charakter fällt gerade nach unten
-      this.y + this.height >= mo.y && // Der Charakter ist im Bereich des Feindes
-      this.y + this.height <= mo.y + mo.height / 2
-    ); // Der Charakter befindet sich oberhalb der Mitte des Feindes
+      this.y + this.height >= mo.y && // Der Charakter ist unterhalb oder auf der Höhe des Feindes
+      this.y + this.height <= mo.y + mo.height // Der Charakter ist oberhalb des Feindes
+    );
   }
 
   bounceOff() {

@@ -15,9 +15,14 @@ body {
   font-family: "zabars", Arial, Helvetica, sans-serif;
   margin: 0;
   min-height: 100vh; /* Sicherstellen, dass der Hintergrund das gesamte Viewport abdeckt */
+  overflow: hidden; /* Verhindert Scrollen */
 }
 
 canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Zentrieren des Startbildschirms */
   background-color: black;
   display: block;
 }
@@ -28,15 +33,67 @@ h1 {
   text-shadow: 4px, 2px, 8px rgba(0, 0, 0, 0.5);
 }
 
+.start-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Zentrieren des Startbildschirms */
+  width: 720px;
+  height: 480px; /* Anpassen der Höhe auf die Höhe des Viewports */
+
+  display: block;
+  z-index: 10;
+}
+
+#play-btn {
+  position: absolute;
+  z-index: 9999; /* Sicherstellen, dass es vor allen anderen Elementen liegt */
+  height: 64px;
+  width: 64px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  cursor: pointer; /* Ändert den Mauszeiger bei Hover */
+}
+
+#game-over-img {
+  position: absolute;
+  z-index: 9999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 720px;
+  height: 480px;
+  pointer-events: none; /* Verhindert, dass das Bild Mausereignisse abfängt */
+}
+
+#win-img {
+  position: absolute;
+  z-index: 9999;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 100%;
+  max-height: 100%;
+  pointer-events: none; /* Verhindert, dass das Bild Mausereignisse abfängt */
+}
 /* SMARTPHONE */
 @media only screen and (max-width: 760px) {
   canvas {
     width: 100%;
+  }
+  .start-screen {
+    width: 100%;
+    height: auto;
   }
 }
 
 @media only screen and (max-height: 480px) {
   canvas {
     height: 100vh;
+  }
+  .start-screen {
+    height: 100vh;
+    width: auto;
   }
 }

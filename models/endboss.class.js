@@ -2,6 +2,11 @@ class Endboss extends MovableObject {
   height = 400;
   width = 250;
   y = 55;
+  maxEnergy = 100;
+  energy = this.maxEnergy;
+  hitCount = 0;
+  walking = false;
+  walkingSpeed = 3;
 
   IMAGES_WALKING = [
     "img/4_enemie_boss_chicken/1_walk/G1.png",
@@ -33,27 +38,127 @@ class Endboss extends MovableObject {
   ];
 
   IMAGES_HURT = [
-    "img/4_enemie_boss_chicken/1_walk/G21.png",
-    "img/4_enemie_boss_chicken/1_walk/G22.png",
-    "img/4_enemie_boss_chicken/1_walk/G23.png",
+    "img/4_enemie_boss_chicken/4_hurt/G21.png",
+    "img/4_enemie_boss_chicken/4_hurt/G22.png",
+    "img/4_enemie_boss_chicken/4_hurt/G23.png",
   ];
 
   IMAGES_DEAD = [
-    "img/4_enemie_boss_chicken/1_walk/G24.png",
-    "img/4_enemie_boss_chicken/1_walk/G25.png",
-    "img/4_enemie_boss_chicken/1_walk/G26.png",
+    "img/4_enemie_boss_chicken/5_dead/G24.png",
+    "img/4_enemie_boss_chicken/5_dead/G25.png",
+    "img/4_enemie_boss_chicken/5_dead/G26.png",
   ];
 
   constructor() {
     super().loadImage(this.IMAGES_ALERT[0]);
     this.loadImages(this.IMAGES_ALERT);
-    this.x = 2400;
+    this.loadImages(this.IMAGES_WALKING);
+    this.loadImages(this.IMAGES_DEAD);
+    this.loadImages(this.IMAGES_HURT);
+    this.loadImages(this.IMAGES_ATTACK);
+    this.x = 3300;
     this.animate();
   }
 
   animate() {
-    setInterval(() => {
+    this.animationInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_ALERT);
     }, 200);
   }
+
+  startWalking() {
+    if (this.walking) return;
+
+    this.walking = true;
+    this.clearEndbossIntervals();
+
+    this.animationInterval = setInterval(() => {
+      this.playAnimation(this.IMAGES_WALKING);
+    }, 130);
+
+    this.walkingInterval = setInterval(() => {
+      this.x -= this.walkingSpeed;
+    }, 1000 / 60);
+  }
+
+  startAttackAnimation() {
+    this.clearEndbossIntervals();
+
+    let i = 0;
+    this.walking = false;
+
+    const attackAnimationInterval = setInterval(() => {
+      if (i < this.IMAGES_ATTACK.length) {
+        this.img = this.imageCache[this.IMAGES_ATTACK[i]];
+        i++;
+      } else {
+        if (!this.isEnemyDead) {
+          this.startWalking();
+        }
+      }
+    }, 200);
+  }
+
+  hurt() {
+    this.clearEndbossIntervals();
+
+    let i = 0;
+    this.walking = false;
+
+    const hurtAnimationInterval = setInterval(() => {
+      if (i < this.IMAGES_HURT.length) {
+        this.img = this.imageCache[this.IMAGES_HURT[i]];
+        i++;
+      } else {
+        if (!this.isEnemyDead) {
+          this.startWalking();
+        }
+      }
+    }, 200);
+  }
+
+  die() {
+    this.isEnemyDead = true;
+    this.clearEndbossIntervals();
+
+    let i = 0;
+    const deathAnimationInterval = setInterval(() => {
+      if (i < this.IMAGES_DEAD.length) {
+        this.img = this.imageCache[this.IMAGES_DEAD[i]];
+        i++;
+      } else {
+        this.removeFromWorld();
+      }
+    }, 300);
+    this.winGame();
+  }
+
+  winGame() {
+    let sounds = document.querySelectorAll("audio");
+    sounds.forEach((sound) => {
+      sound.pause();
+      sound.currentTime = 0;
+    });
+
+    const winImg = document.createElement("img");
+    winImg.src = "img/9_intro_outro_screens/win/win_2.png";
+    winImg.id = "win-img";
+    document.body.appendChild(winImg);
+  }
+
+  clearEndbossIntervals() {
+    clearInterval(this.animationInterval);
+    clearInterval(this.walkingInterval);
+    clearInterval(this.attackAnimationInterval);
+    clearInterval(this.hurtAnimationInterval);
+  }
+
+  /*
+  removeFromWorld() {
+    const index = this.world.level.enemies.indexOf(this);
+    if (index > -1) {
+      this.world.level.enemies.splice(index, 1);
+    }
+  }
+*/
 }

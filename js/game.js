@@ -3,10 +3,31 @@ let world;
 let keyboard = new Keyboard();
 
 function init() {
-  canvas = document.getElementById("canvas");
-  world = new World(canvas, keyboard);
+  const startMusic = document.getElementById("startMusic");
+  startMusic.play();
+}
 
-  console.log("my character is", world.character);
+function startGame() {
+  initLevel();
+  const startScreen = document.getElementById("startScreen");
+  const canvas = document.getElementById("canvas");
+  const backgroundMusic = document.getElementById("backgroundMusic");
+  const playBtn = document.getElementById("play-btn");
+  playBtn.style.display = "none";
+
+  // Stop start music
+  startMusic.pause();
+  startMusic.currentTime = 0;
+
+  // Hide start screen
+  startScreen.style.display = "none";
+
+  // Show canvas and start background music
+  canvas.style.display = "block";
+  backgroundMusic.play();
+
+  // Initialize the game
+  world = new World(canvas, keyboard);
 }
 
 window.addEventListener("keydown", (e) => {
