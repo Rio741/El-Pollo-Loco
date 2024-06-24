@@ -68,14 +68,11 @@ class Endboss extends MovableObject {
 
   startWalking() {
     if (this.walking) return;
-
     this.walking = true;
     this.clearEndbossIntervals();
-
     this.animationInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_WALKING);
     }, 130);
-
     this.walkingInterval = setInterval(() => {
       this.x -= this.walkingSpeed;
     }, 1000 / 60);
@@ -83,10 +80,8 @@ class Endboss extends MovableObject {
 
   startAttackAnimation() {
     this.clearEndbossIntervals();
-
     let i = 0;
     this.walking = false;
-
     const attackAnimationInterval = setInterval(() => {
       if (i < this.IMAGES_ATTACK.length) {
         this.img = this.imageCache[this.IMAGES_ATTACK[i]];
@@ -101,10 +96,8 @@ class Endboss extends MovableObject {
 
   hurt() {
     this.clearEndbossIntervals();
-
     let i = 0;
     this.walking = false;
-
     const hurtAnimationInterval = setInterval(() => {
       if (i < this.IMAGES_HURT.length) {
         this.img = this.imageCache[this.IMAGES_HURT[i]];
@@ -140,10 +133,8 @@ class Endboss extends MovableObject {
       sound.currentTime = 0;
     });
 
-    const winImg = document.createElement("img");
-    winImg.src = "img/9_intro_outro_screens/win/win_2.png";
-    winImg.id = "win-img";
-    document.body.appendChild(winImg);
+    let winImg = document.getElementById("win-img");
+    winImg.style.display = "flex";
   }
 
   clearEndbossIntervals() {

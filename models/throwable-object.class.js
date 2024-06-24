@@ -26,18 +26,29 @@ class ThrowableObject extends MovableObject {
     this.x = x;
     this.y = y;
     this.direction = direction;
-    this.world = world; // Referenz auf die Welt hinzufügen
+    this.world = world;
     this.height = 70;
     this.width = 70;
-    this.isUsed = false; // Markierung, ob die Flasche bereits eine Kollision verursacht hat
+    this.isUsed = false;
     this.throwInterval = null;
     this.throw();
   }
 
+  applyBottleGravity() {
+    setInterval(() => {
+      if (this.isAboveGround() || this.speedY > 0) {
+        this.y -= this.speedY;
+        this.speedY -= this.acceleration;
+      } else {
+        this.onGround();
+      }
+    }, 1000 / 25);
+  }
+
   throw() {
     this.speedY = 30;
-    this.applyGravity();
-    this.throwSound.play(); // Sound beim Werfen abspielen
+    this.applyBottleGravity();
+    this.throwSound.play();
     this.throwInterval = setInterval(() => {
       if (this.direction === "right") {
         this.x += 9;
@@ -59,17 +70,23 @@ class ThrowableObject extends MovableObject {
     }, 100);
   }
   remove() {
-    this.world.removeObject(this); // Entferne das Objekt aus der Welt
+    this.world.removeObject(this);
   }
 
   animateSplashingBottle() {
+    this.prepareForSplash();
+    this.playSplashAnimation();
+  }
+
+  prepareForSplash() {
     this.throwSound.pause();
-    this.splashSound.play(); // Splash-Sound abspielen
+    this.splashSound.play();
     clearInterval(this.throwInterval);
     this.throwInterval = null;
     this.loadImages(this.BOTTLE_SPLASHING_IMAGES);
+  }
 
-    // Intervall für die Animation in Millisekunden festlegen (hier 100ms)
+  playSplashAnimation() {
     const animationInterval = 100;
     let currentFrame = 0;
     const totalFrames = this.BOTTLE_SPLASHING_IMAGES.length;
@@ -77,7 +94,7 @@ class ThrowableObject extends MovableObject {
     const intervalId = setInterval(() => {
       if (currentFrame >= totalFrames) {
         clearInterval(intervalId);
-        this.remove(); // Entferne das Objekt nach der Splash-Animation
+        this.remove();
       } else {
         this.playAnimationFrame(this.BOTTLE_SPLASHING_IMAGES[currentFrame]);
         currentFrame++;
@@ -98,5 +115,15 @@ class ThrowableObject extends MovableObject {
 
   markAsUsed() {
     this.isUsed = true;
+  }
+
+  muteSounds() {
+    this.throwSound.muted = true;
+    this.splashSound.muted = true;
+  }
+
+  unmuteSounds() {
+    this.throwSound.muted = false;
+    this.splashSound.muted = false;
   }
 }

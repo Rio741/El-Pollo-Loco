@@ -23,25 +23,120 @@
     <script src="levels/level1.js"></script>
     <script src="js/game.js"></script>
   </head>
-  <body onload="init()">
-    <h1>El Pollo Loco</h1>
-    <audio id="startMusic" src="audio/startmusic.mp3" loop></audio>
-    <audio id="backgroundMusic" src="audio/background-mp3.mp3" loop></audio>
+  <body>
+    <div class="fullscreen" id="fullscreen">
+      <h1>El Pollo Loco</h1>
+      <audio id="startMusic" src="audio/startmusic.mp3" loop></audio>
+      <audio id="backgroundMusic" src="audio/background-mp3.mp3" loop></audio>
+      <div class="game-container">
+        <img
+          id="startScreen"
+          src="img/9_intro_outro_screens/start/startscreen_1.png"
+          alt="Start Screen"
+        />
+        <img
+          id="game-over-img"
+          src="img/9_intro_outro_screens/game_over/game over.png"
+          alt=""
+          style="display: none"
+        />
+        <img
+          id="win-img"
+          src="img/9_intro_outro_screens/win/win_2.png"
+          alt=""
+          style="display: none"
+        />
 
-    <div id="startScreen">
-      <img
-        class="start-screen"
-        src="img/9_intro_outro_screens/start/startscreen_1.png"
-        alt="Start Screen"
-      />
+        <canvas id="canvas" width="720px" height="480px"></canvas>
+        <img
+          onclick="startGame()"
+          id="play-btn"
+          src="img/icons/play-btn.png"
+          alt="PLAY"
+        />
+
+        <img
+          id="fullscreen-btn"
+          style="display: none"
+          src="img/icons/fullscreen.png"
+          alt="Full Screen"
+          onclick="toggleFullScreen()"
+        />
+        <img
+          id="mute-btn"
+          src="img/icons/mute.png"
+          alt="Mute"
+          onclick="soundOn()"
+          style="display: none"
+        />
+
+        <img
+          id="sound-btn"
+          src="img/icons/sound.png"
+          alt="Sound"
+          onclick="soundOff()"
+          style="display: flex"
+        />
+        <span id="mute-text">Sound</span>
+        <img
+          id="info-btn"
+          src="img/icons/info.png"
+          alt="Info"
+          onclick="toggleInfo()"
+        />
+        <span id="info-text">Info</span>
+        <img
+          id="legal-notice-btn"
+          src="img/icons/notice.png"
+          alt="Legal Notice"
+          onclick="openLegalNotice()"
+        />
+        <span id="legal-notice-text">Legal Notice</span>
+        <img
+          id="privacy-policity-btn"
+          src="img/icons/policity.png"
+          alt="Privacy Policity"
+          onclick="openPrivacyPolicity()"
+        />
+        <span id="privacy-policity-text">Privacy Policy</span>
+      </div>
+      <div id="info-container" onclick="closePopup()">
+        <div id="info-content" onclick="doNotClose(event)">
+          <h2>How to Play</h2>
+          <p>Use arrow keys to move the character.</p>
+          <p>Press space to jump.</p>
+          <p>Collect coins to increase your score.</p>
+          <p>Avoid enemies and obstacles to survive.</p>
+          <button id="close-btn" onclick="closePopup()">Close</button>
+        </div>
+      </div>
+
+      <div
+        id="privacy-policity-container"
+        class="overlay"
+        onclick="closePopup()"
+      >
+        <div id="privacy-policity-content" onclick="doNotClose(event)">
+          <span class="close-btn" onclick="openPrivacyPolicity()">&times;</span>
+          <h2>Policity Information</h2>
+          <p>
+            Hier kannst du die Informationen zur Datenschutzerklärung einfügen.
+          </p>
+        </div>
+      </div>
+
+      <div id="legal-notice-container" class="overlay" onclick="closePopup()">
+        <div id="legal-notice-content" onclick="doNotClose(event)">
+          <span class="close-btn" onclick="openLegalNotice()">&times;</span>
+          <h2>Policity Information</h2>
+          <p>
+            Hier kannst du die Informationen zur Datenschutzerklärung einfügen.
+          </p>
+        </div>
+      </div>
+      <div id="orientation-warning">
+        <p>Turn your Device to play</p>
+      </div>
     </div>
-
-    <canvas id="canvas" width="720px" height="480px"></canvas>
-    <img
-      onclick="startGame()"
-      id="play-btn"
-      src="img/icons/play-btn.png"
-      alt="PLAY"
-    />
   </body>
 </html>

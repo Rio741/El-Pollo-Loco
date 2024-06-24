@@ -7,24 +7,11 @@ class MovableObject extends DrawableObject {
   collectedCoins = 0;
   collectedBottles = 0;
   lastHit = 0;
-  sleepAnimationPlayed = false;
   isEnemyDead;
-
-  // NUR FLASCHEN !!!
-  applyGravity() {
-    setInterval(() => {
-      if (this.isAboveGround() || this.speedY > 0) {
-        this.y -= this.speedY;
-        this.speedY -= this.acceleration;
-      } else {
-        this.onGround();
-      }
-    }, 1000 / 25);
-  }
 
   isAboveGround() {
     if (this instanceof ThrowableObject) {
-      return this.y < 340; // fuer flasche fallstop
+      return this.y < 340;
     } else {
       return this.y < 135;
     }
@@ -69,16 +56,6 @@ class MovableObject extends DrawableObject {
     }
   }
 
-  hit() {
-    this.energy -= 20;
-    if (this.energy < 0) {
-      this.energy = 0;
-    } else {
-      this.lastHit = new Date().getTime();
-      this.hurtSound.play(); // Sound beim Treffer abspielen
-    }
-  }
-
   incrementCoinCount() {
     this.collectedCoins++;
   }
@@ -86,23 +63,10 @@ class MovableObject extends DrawableObject {
   incrementBottleCount() {
     this.collectedBottles++;
     if (this.collectedBottles > 5) {
-      this.collectedBottles = 5; // Maximal 5 Flaschen
+      this.collectedBottles = 5;
     }
   }
 
-  isHurt() {
-    let timepassed = new Date().getTime() - this.lastHit;
-    timepassed = timepassed / 1000;
-    return timepassed < 1;
-  }
-
-  isDead() {
-    if (this.energy == 0) {
-      this.endGame(); // Beende das Spiel
-      return true;
-    }
-    return false;
-  }
   endGame() {
     // Stoppe alle Intervalle
     let highestIntervalId = setInterval(() => {}, 10000);
@@ -115,20 +79,11 @@ class MovableObject extends DrawableObject {
     sounds.forEach((sound) => {
       sound.pause();
       this.walking_sound.pause();
-      sound.currentTime = 0; // Setze den Ton zurück
+      sound.currentTime = 0;
     });
 
-    // Füge das Game Over-Bild hinzu
-    const gameOverImg = document.createElement("img");
-    gameOverImg.src = "img/9_intro_outro_screens/game_over/game over.png";
-    gameOverImg.id = "game-over-img";
-    document.body.appendChild(gameOverImg);
-  }
-
-  isSleep() {
-    let timepassed = new Date().getTime() - this.lastMoved;
-    timepassed = timepassed / 1000;
-    return timepassed > 3;
+    let gameOverImg = document.getElementById("game-over-img");
+    gameOverImg.style.display = "flex";
   }
 
   playAnimation(images, playOnce = false) {
@@ -138,7 +93,7 @@ class MovableObject extends DrawableObject {
         this.img = this.imageCache[path];
         this.currentImage++;
       } else {
-        this.currentImage = images.length - 1; // Stop at the last image
+        this.currentImage = images.length - 1;
       }
     } else {
       let i = this.currentImage % images.length;
@@ -148,41 +103,21 @@ class MovableObject extends DrawableObject {
     }
   }
 
-  /*playAnimation(images) {
-    let i = this.currentImage % images.length;
-    if (i < images.length - 1) {
-      let path = images[i];
-      this.img = this.imageCache[path];
-      this.currentImage++;
-    }
-  }
-*/
-
   moveRight() {
     this.x += this.speed;
-    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
+    this.lastMoved = new Date().getTime();
   }
 
   moveLeft() {
     this.x -= this.speed;
-    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
-  }
-
-  jump() {
-    this.jumpSound.play();
-    this.speedY = 32;
-    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
+    this.lastMoved = new Date().getTime();
   }
 
   isJumpingOn(mo) {
     return (
-      this.speedY < 0 && // Der Charakter fällt gerade nach unten
-      this.y + this.height >= mo.y && // Der Charakter ist unterhalb oder auf der Höhe des Feindes
-      this.y + this.height <= mo.y + mo.height // Der Charakter ist oberhalb des Feindes
+      this.speedY < 0 &&
+      this.y + this.height >= mo.y &&
+      this.y + this.height <= mo.y + mo.height
     );
-  }
-
-  bounceOff() {
-    this.speedY = 23; // Der Charakter springt leicht ab, wenn er auf einen Feind trifft
   }
 }

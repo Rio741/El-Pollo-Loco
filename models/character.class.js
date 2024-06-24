@@ -3,6 +3,7 @@ class Character extends MovableObject {
   height = 300;
   width = 140;
   speed = 6;
+
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -194,6 +195,46 @@ class Character extends MovableObject {
         }
       }
     }, 80);
+  }
+
+  hit() {
+    this.energy -= 20;
+    if (this.energy < 0) {
+      this.energy = 0;
+    } else {
+      this.lastHit = new Date().getTime();
+      this.hurtSound.play();
+    }
+  }
+
+  jump() {
+    this.jumpSound.play();
+    this.speedY = 32;
+    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
+  }
+
+  bounceOff() {
+    this.speedY = 23;
+  }
+
+  isHurt() {
+    let timepassed = new Date().getTime() - this.lastHit;
+    timepassed = timepassed / 1000;
+    return timepassed < 1;
+  }
+
+  isDead() {
+    if (this.energy == 0) {
+      this.endGame();
+      return true;
+    }
+    return false;
+  }
+
+  isSleep() {
+    let timepassed = new Date().getTime() - this.lastMoved;
+    timepassed = timepassed / 1000;
+    return timepassed > 3;
   }
 
   applyGravity() {

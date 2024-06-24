@@ -10,10 +10,11 @@ class World {
   coinStatusBar = new StatusBar(StatusBar.COIN_IMAGES, 10, 70);
   endbossStatusBar = new StatusBar(StatusBar.ENDBOSS_IMAGES, 540, 10);
   throwableObjects = [];
-  canCollideWithEnemy = true; // Flagge, um Kollisionen zu steuern
+  canCollideWithEnemy = true;
 
   jumpOnSound = new Audio("audio/jump-on.mp3");
   bottleSound = new Audio("audio/bottle.mp3");
+  coinSound = new Audio("audio/coin.mp3");
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -26,21 +27,21 @@ class World {
 
   setWorld() {
     this.character.world = this;
-    this.level.enemies.forEach((enemy) => (enemy.world = this)); // Weisen Sie allen Feinden die Welt zu
+    this.level.enemies.forEach((enemy) => (enemy.world = this));
   }
 
   run() {
     setInterval(() => {
       this.checkEnemyCollisions();
       this.checkItemCollisions();
-      this.checkThrowableCollisions(); // Hinzufügen der Kollisionsprüfung für die geworfenen Objekte
-      this.checkJumpOnEnemies(); // Neue Methode zum Überprüfen von Sprüngen auf Gegner
-      this.checkEndbossStartWalking(); // Überprüfen, ob der Endboss anfangen soll zu laufen
+      this.checkThrowableCollisions();
+      this.checkJumpOnEnemies();
+      this.checkEndbossStartWalking();
     }, 40);
 
     setInterval(() => {
       this.checkThrowObjects();
-    }, 200); // Alle 200 Millisekunden
+    }, 200);
 
     setInterval(() => {
       const endboss = this.level.enemies.find(
@@ -49,7 +50,7 @@ class World {
       if (endboss && endboss.walking && !endboss.attackAnimationInterval) {
         endboss.startAttackAnimation();
       }
-    }, 4000); // Alle 5000 Millisekunden (5 Sekunden)
+    }, 4000);
   }
 
   checkEndbossStartWalking() {
@@ -70,8 +71,8 @@ class World {
         this.character.isJumpingOn(enemy)
       ) {
         if (!(enemy instanceof Endboss) && !enemy.isEnemyDead) {
-          enemy.die(); // Gegner stirbt, wenn der Charakter auf ihn springt
-          this.character.bounceOff(); // Charakter springt ab
+          enemy.die();
+          this.character.bounceOff();
           this.jumpOnSound.play();
         }
       }
@@ -106,15 +107,15 @@ class World {
         this.level.enemies.forEach((enemy) => {
           if (bottle.isColliding(enemy)) {
             if (enemy instanceof Endboss) {
-              enemy.energy -= 20; // Beispiel: Endboss verliert 20 Energie pro Treffer
-              enemy.hurt(); // Hurt-Animation abspielen
+              enemy.energy -= 20;
+              enemy.hurt();
               if (enemy.energy < 0) enemy.energy = 0;
-              this.updateEndbossStatusBar(); // Statusleiste aktualisieren
+              this.updateEndbossStatusBar();
               if (enemy.energy <= 0 && !enemy.isEnemyDead) {
-                enemy.die(); // Endboss stirbt, wenn Energie auf 0 fällt
+                enemy.die();
               }
             } else {
-              enemy.die(); // Normale Gegner sterben sofort
+              enemy.die();
             }
             bottle.markAsUsed();
           }
@@ -131,32 +132,30 @@ class World {
   }
 
   addThrowableObject(throwableObject) {
-    throwableObject.world = this; // Referenz zur Welt setzen
+    throwableObject.world = this;
     this.throwableObjects.push(throwableObject);
   }
 
-  // In der Methode, die die Kollisionen überprüft (z.B. checkEnemyCollisions())
   checkEnemyCollisions() {
     this.level.enemies.forEach((enemy) => {
       if (this.canCollideWithEnemy && this.character.isColliding(enemy)) {
         if (this.character.isJumpingOn(enemy) && !(enemy instanceof Endboss)) {
-          enemy.die(); // Gegner stirbt, wenn der Charakter auf ihn springt
-          this.character.bounceOff(); // Charakter springt ab
+          enemy.die();
+          this.character.bounceOff();
         } else {
           if (enemy instanceof Endboss) {
-            this.character.energy = 0; // Setze die Energie des Charakters auf 0
-            this.healthStatusBar.setPercentage(0); // Setze die StatusBar auf 0
-            this.character.isDead(); // Überprüfe, ob der Charakter tot ist
-            // Führe hier weitere Aktionen aus, um den Tod des Charakters zu behandeln
+            this.character.energy = 0;
+            this.healthStatusBar.setPercentage(0);
+            this.character.isDead();
           } else {
-            this.character.hit(); // Charakter nimmt Schaden
-            this.healthStatusBar.setPercentage(this.character.energy); // Aktualisiere die StatusBar
+            this.character.hit();
+            this.healthStatusBar.setPercentage(this.character.energy);
           }
         }
-        this.canCollideWithEnemy = false; // Kollisionen für eine Sekunde sperren
+        this.canCollideWithEnemy = false;
         setTimeout(() => {
           this.canCollideWithEnemy = true;
-        }, 1000); // Nach 1 Sekunde können wieder Kollisionen erkannt werden
+        }, 1000);
       }
     });
   }
@@ -170,14 +169,14 @@ class World {
   }
 
   handleEnemyCollision() {
-    this.character.energy = 0; // Setze die Energie des Charakters auf 0
-    this.character.isDead(); // Überprüfe, ob der Charakter tot ist
-    this.healthStatusBar.setPercentage(this.character.energy); // Aktualisiere die Lebensanzeige
+    this.character.energy = 0;
+    this.character.isDead();
+    this.healthStatusBar.setPercentage(this.character.energy);
     const endboss = this.level.enemies.find(
       (enemy) => enemy instanceof Endboss
     );
     if (endboss && !endboss.isDead) {
-      endboss.startAttackAnimation(); // Starte die Angriffsanimation des Endbosses
+      endboss.startAttackAnimation();
     }
   }
 
@@ -194,18 +193,18 @@ class World {
     let coinPercentage =
       (this.character.collectedCoins / this.level.totalCoins) * 100;
     this.coinStatusBar.setPercentage(coinPercentage);
-    this.level.items.splice(index, 1); // Entferne die Münze
-    const coinSound = new Audio("audio/coin.mp3");
-    coinSound.play(); // Spiele den Coin-Sound ab
+    this.level.items.splice(index, 1);
+
+    this.coinSound.play();
   }
 
   collectBottle(index) {
     if (this.character.collectedBottles < 5) {
       this.character.incrementBottleCount();
-      let bottlePercentage = this.character.collectedBottles * 20; // Umrechnung auf Prozentwert (5 Flaschen max)
+      let bottlePercentage = this.character.collectedBottles * 20;
       this.bottleStatusBar.setPercentage(bottlePercentage);
-      this.level.items.splice(index, 1); // Entferne die Flasche
-      this.bottleSound.play(); // Spiele den Coin-Sound ab
+      this.level.items.splice(index, 1);
+      this.bottleSound.play();
     }
   }
 
@@ -244,6 +243,7 @@ class World {
       this.flipImageBack(mo);
     }
   }
+
   flipImage(mo) {
     this.ctx.save();
     this.ctx.translate(mo.width, 0);
