@@ -69,6 +69,7 @@ class Character extends MovableObject {
   walking_sound = new Audio("audio/running.mp3");
   jumpSound = new Audio("audio/jump.mp3");
   hurtSound = new Audio("audio/hurt.mp3");
+  snoreSound = new Audio("audio/snore.mp3");
 
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
@@ -108,6 +109,7 @@ class Character extends MovableObject {
       this.otherDirection = false;
       this.walking_sound.play();
       this.sleepAnimationPlayed = false;
+      this.snoreSound.pause();
     }
   }
 
@@ -117,6 +119,7 @@ class Character extends MovableObject {
       this.otherDirection = true;
       this.walking_sound.play();
       this.sleepAnimationPlayed = false;
+      this.snoreSound.pause();
     }
   }
 
@@ -124,6 +127,7 @@ class Character extends MovableObject {
     if (this.world.keyboard.SPACE && !this.isAboveGround()) {
       this.jump();
       this.sleepAnimationPlayed = false;
+      this.snoreSound.pause();
     }
   }
 
@@ -160,6 +164,7 @@ class Character extends MovableObject {
     setInterval(() => {
       if (this.isSleep() && this.sleepAnimationPlayed) {
         this.playAnimation(this.IMAGES_LONG_SLEEP);
+        this.snoreSound.play();
       }
     }, 200);
   }
@@ -225,7 +230,7 @@ class Character extends MovableObject {
 
   isDead() {
     if (this.energy == 0) {
-      this.endGame();
+      this.loseGame();
       return true;
     }
     return false;

@@ -12,9 +12,12 @@ class World {
   throwableObjects = [];
   canCollideWithEnemy = true;
 
-  jumpOnSound = new Audio("audio/jump-on.mp3");
   bottleSound = new Audio("audio/bottle.mp3");
-  coinSound = new Audio("audio/coin.mp3");
+
+  backgroundMusic = new Audio("audio/background.mp3");
+  endbossMusic = new Audio("audio/background-endboss.mp3");
+  gunshotSound = new Audio("audio/gunshot.mp3");
+  endbossSound = new Audio("audio/endboss.mp3");
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -23,6 +26,20 @@ class World {
     this.draw();
     this.setWorld();
     this.run();
+    this.playBackgroundMusic();
+  }
+
+  playBackgroundMusic() {
+    this.backgroundMusic.loop = true;
+    this.backgroundMusic.play();
+  }
+
+  switchToEndbossMusic() {
+    this.backgroundMusic.pause();
+    this.endbossMusic.loop = true;
+    this.gunshotSound.play();
+    this.endbossMusic.play();
+    this.endbossSound.play();
   }
 
   setWorld() {
@@ -60,6 +77,7 @@ class World {
       );
       if (endboss && !endboss.walking) {
         endboss.startWalking();
+        this.switchToEndbossMusic();
       }
     }
   }
@@ -73,7 +91,6 @@ class World {
         if (!(enemy instanceof Endboss) && !enemy.isEnemyDead) {
           enemy.die();
           this.character.bounceOff();
-          this.jumpOnSound.play();
         }
       }
     });
@@ -195,7 +212,8 @@ class World {
     this.coinStatusBar.setPercentage(coinPercentage);
     this.level.items.splice(index, 1);
 
-    this.coinSound.play();
+    let coinSound = new Audio("audio/coin.mp3");
+    coinSound.play();
   }
 
   collectBottle(index) {
@@ -237,7 +255,7 @@ class World {
       this.flipImage(mo);
     }
     mo.draw(this.ctx);
-    mo.drawFrame(this.ctx);
+    // mo.drawFrame(this.ctx);
 
     if (mo.otherDirection) {
       this.flipImageBack(mo);

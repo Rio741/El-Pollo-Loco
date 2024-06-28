@@ -1,40 +1,33 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
+let intervalIds = [];
+let i = 1;
 
-function init() {
-  const startMusic = document.getElementById("startMusic");
-  startMusic.play();
+function setStoppableInterval(fn, time) {
+  let id = setInterval(fn, time);
+  intervalIds.push(id);
 }
+
+//setStoppableInterval(handleRightMovement(), 40);
+
+function stopGame() {
+  intervalIds.forEach(clearInterval);
+}
+
+console.log(intervalIds);
+
+function init() {}
 
 function startGame() {
   initLevel();
-  const PrivacyPolicityBtn = document.getElementById("privacy-policity-btn");
-  const LegalNoticeBtn = document.getElementById("legal-notice-btn");
-  const startScreen = document.getElementById("startScreen");
-  const fullscreenBtn = document.getElementById("fullscreen-btn");
-  const infoBtn = document.getElementById("info-btn");
-  const canvas = document.getElementById("canvas");
-  const backgroundMusic = document.getElementById("backgroundMusic");
-  const playBtn = document.getElementById("play-btn");
-  playBtn.style.display = "none";
-  fullscreenBtn.style.display = "flex";
-  infoBtn.style.display = "none";
-  PrivacyPolicityBtn.style.display = "none";
-  LegalNoticeBtn.style.display = "none";
-
-  // Stop start music
-  startMusic.pause();
-  startMusic.currentTime = 0;
-
-  // Hide start screen
-  startScreen.style.display = "none";
-
-  // Show canvas and start background music
+  let canvas = document.getElementById("canvas");
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("play-btn").style.display = "none";
+  document.getElementById("privacy-policity-btn").style.display = "none";
+  document.getElementById("legal-notice-btn").style.display = "none";
+  document.getElementById("info-btn").style.display = "none";
   canvas.style.display = "block";
-  backgroundMusic.play();
-
-  // Initialize the game
   world = new World(canvas, keyboard);
 }
 
@@ -54,17 +47,15 @@ function toggleFullScreen() {
 function soundOff() {
   document.getElementById("mute-btn").style.display = "flex";
   document.getElementById("sound-btn").style.display = "none";
-  const backgroundMusic = document.getElementById("backgroundMusic");
-  backgroundMusic.muted = true;
 
-  // Andere Sounds stummschalten
   world.character.walking_sound.muted = true;
   world.character.jumpSound.muted = true;
   world.character.hurtSound.muted = true;
-  world.jumpOnSound.muted = true;
+  world.character.snoreSound.muted = true;
+  world.chicken.chickenSound.muted = true;
+  world.babyChicken.babyChickenSound.muted = true;
   world.bottleSound.muted = true;
   world.coinSound.muted = true;
-
   world.throwSound.muted = true;
   world.splashSound.muted = true;
 }
@@ -72,21 +63,20 @@ function soundOff() {
 function soundOn() {
   document.getElementById("mute-btn").style.display = "none";
   document.getElementById("sound-btn").style.display = "flex";
-  const backgroundMusic = document.getElementById("backgroundMusic");
-  backgroundMusic.muted = false;
 
-  // Andere Sounds aktivieren
   world.character.walking_sound.muted = false;
   world.character.jumpSound.muted = false;
   world.character.hurtSound.muted = false;
-  world.jumpOnSound.muted = false;
+  world.character.snoreSound.muted = false;
+  world.enemies.chicken.chickenSound.muted = false;
+  world.enemies.babyChicken.babyChickenSound.muted = false;
   world.bottleSound.muted = false;
   world.coinSound.muted = false;
   world.throwSound.muted = false;
   world.splashSound.muted = false;
 }
 
-function toggleInfo() {
+function openInfo() {
   const infoContainer = document.getElementById("info-container");
   if (infoContainer.style.display === "flex") {
     infoContainer.style.display = "none";
@@ -222,4 +212,71 @@ window.addEventListener("keyup", (e) => {
   if (e.keyCode == 68) {
     keyboard.D = false;
   }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  const leftBtn = document.getElementById("left-btn");
+  const rightBtn = document.getElementById("right-btn");
+  const jumpBtn = document.getElementById("jump-btn");
+  const throwBtn = document.getElementById("throw-btn");
+
+  leftBtn.addEventListener("mousedown", () => {
+    keyboard.LEFT = true;
+  });
+  leftBtn.addEventListener("mouseup", () => {
+    keyboard.LEFT = false;
+  });
+  leftBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    keyboard.LEFT = true;
+  });
+  leftBtn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    keyboard.LEFT = false;
+  });
+
+  rightBtn.addEventListener("mousedown", () => {
+    keyboard.RIGHT = true;
+  });
+  rightBtn.addEventListener("mouseup", () => {
+    keyboard.RIGHT = false;
+  });
+  rightBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    keyboard.RIGHT = true;
+  });
+  rightBtn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    keyboard.RIGHT = false;
+  });
+
+  jumpBtn.addEventListener("mousedown", () => {
+    keyboard.SPACE = true;
+  });
+  jumpBtn.addEventListener("mouseup", () => {
+    keyboard.SPACE = false;
+  });
+  jumpBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    keyboard.SPACE = true;
+  });
+  jumpBtn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    keyboard.SPACE = false;
+  });
+
+  throwBtn.addEventListener("mousedown", () => {
+    keyboard.D = true;
+  });
+  throwBtn.addEventListener("mouseup", () => {
+    keyboard.D = false;
+  });
+  throwBtn.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    keyboard.D = true;
+  });
+  throwBtn.addEventListener("touchend", (e) => {
+    e.preventDefault();
+    keyboard.D = false;
+  });
 });

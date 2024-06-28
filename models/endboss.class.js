@@ -8,6 +8,8 @@ class Endboss extends MovableObject {
   walking = false;
   walkingSpeed = 3;
 
+  winSound = new Audio("audio/win.mp3");
+
   IMAGES_WALKING = [
     "img/4_enemie_boss_chicken/1_walk/G1.png",
     "img/4_enemie_boss_chicken/1_walk/G2.png",
@@ -79,16 +81,39 @@ class Endboss extends MovableObject {
   }
 
   startAttackAnimation() {
+    if (this.attackAnimationInterval) return; // Verhindern, dass mehrere Angriffsintervalle gleichzeitig laufen
     this.clearEndbossIntervals();
     let i = 0;
     this.walking = false;
-    const attackAnimationInterval = setInterval(() => {
+    this.attackAnimationInterval = setInterval(() => {
       if (i < this.IMAGES_ATTACK.length) {
         this.img = this.imageCache[this.IMAGES_ATTACK[i]];
         i++;
       } else {
+        clearInterval(this.attackAnimationInterval);
+        this.attackAnimationInterval = null; // Zurücksetzen des Intervalls
         if (!this.isEnemyDead) {
           this.startWalking();
+        }
+      }
+    }, 200);
+  }
+
+  hurt() {
+    if (this.hurtAnimationInterval) return; // Verhindern, dass mehrere Verletzungsintervalle gleichzeitig laufen
+    this.clearEndbossIntervals();
+    let i = 0;
+    this.walking = false;
+    this.hurtAnimationInterval = setInterval(() => {
+      if (i < this.IMAGES_HURT.length) {
+        this.img = this.imageCache[this.IMAGES_HURT[i]];
+        i++;
+      } else {
+        clearInterval(this.hurtAnimationInterval);
+        this.hurtAnimationInterval = null; // Zurücksetzen des Intervalls
+        if (!this.isEnemyDead) {
+          this.startWalking();
+          this.startAttackAnimation(); // Sicherstellen, dass die Angriff-Animation neu gestartet wird
         }
       }
     }, 200);
@@ -98,11 +123,12 @@ class Endboss extends MovableObject {
     this.clearEndbossIntervals();
     let i = 0;
     this.walking = false;
-    const hurtAnimationInterval = setInterval(() => {
+    this.hurtAnimationInterval = setInterval(() => {
       if (i < this.IMAGES_HURT.length) {
         this.img = this.imageCache[this.IMAGES_HURT[i]];
         i++;
       } else {
+        clearInterval(this.hurtAnimationInterval); // Clear the interval when done
         if (!this.isEnemyDead) {
           this.startWalking();
         }
@@ -127,6 +153,7 @@ class Endboss extends MovableObject {
   }
 
   winGame() {
+    this.winSound.play();
     let sounds = document.querySelectorAll("audio");
     sounds.forEach((sound) => {
       sound.pause();
@@ -142,14 +169,7 @@ class Endboss extends MovableObject {
     clearInterval(this.walkingInterval);
     clearInterval(this.attackAnimationInterval);
     clearInterval(this.hurtAnimationInterval);
+    this.attackAnimationInterval = null; // Zurücksetzen des Intervalls
+    this.hurtAnimationInterval = null; // Zurücksetzen des Intervalls
   }
-
-  /*
-  removeFromWorld() {
-    const index = this.world.level.enemies.indexOf(this);
-    if (index > -1) {
-      this.world.level.enemies.splice(index, 1);
-    }
-  }
-*/
 }
