@@ -9,8 +9,6 @@ class MovableObject extends DrawableObject {
   lastHit = 0;
   isEnemyDead;
 
-  gameOverSound = new Audio("audio/game-over.mp3");
-
   isAboveGround() {
     if (this instanceof ThrowableObject) {
       return this.y < 340;
@@ -71,25 +69,12 @@ class MovableObject extends DrawableObject {
 
   loseGame() {
     setTimeout(() => {
-      this.gameOverSound.play();
-      // Stoppe alle Intervalle
-      let highestIntervalId = setInterval(() => {}, 10000);
-      for (let i = 0; i < highestIntervalId; i++) {
-        clearInterval(i);
-      }
-
-      // Pausiere alle Töne
-      let sounds = document.querySelectorAll("audio");
-      sounds.forEach((sound) => {
-        sound.pause();
-        this.walking_sound.pause();
-        sound.currentTime = 0;
-      });
-
+      this.world.audioManager.gameOverSound.play();
       let gameOverImg = document.getElementById("game-over-img");
       gameOverImg.style.display = "flex";
-    }, 2000); // 1 Sekunde warten, bevor loseGame aufgerufen wird
+    }, 2000);
   }
+
   playAnimation(images, playOnce = false) {
     if (playOnce) {
       if (this.currentImage < images.length) {

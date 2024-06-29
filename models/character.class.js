@@ -66,11 +66,6 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/long_idle/I-20.png",
   ];
 
-  walking_sound = new Audio("audio/running.mp3");
-  jumpSound = new Audio("audio/jump.mp3");
-  hurtSound = new Audio("audio/hurt.mp3");
-  snoreSound = new Audio("audio/snore.mp3");
-
   constructor() {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
     this.loadImages(this.IMAGES_WALKING);
@@ -95,7 +90,7 @@ class Character extends MovableObject {
 
   animateMovement() {
     setInterval(() => {
-      this.walking_sound.pause();
+      this.world.audioManager.walking_sound.pause();
       this.handleRightMovement();
       this.handleLeftMovement();
       this.handleJump();
@@ -107,9 +102,9 @@ class Character extends MovableObject {
     if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
       this.moveRight();
       this.otherDirection = false;
-      this.walking_sound.play();
+      this.world.audioManager.walking_sound.play();
       this.sleepAnimationPlayed = false;
-      this.snoreSound.pause();
+      this.world.audioManager.snoreSound.pause();
     }
   }
 
@@ -117,9 +112,9 @@ class Character extends MovableObject {
     if (this.world.keyboard.LEFT && this.x > -100) {
       this.moveLeft();
       this.otherDirection = true;
-      this.walking_sound.play();
+      this.world.audioManager.walking_sound.play();
       this.sleepAnimationPlayed = false;
-      this.snoreSound.pause();
+      this.world.audioManager.snoreSound.pause();
     }
   }
 
@@ -127,7 +122,7 @@ class Character extends MovableObject {
     if (this.world.keyboard.SPACE && !this.isAboveGround()) {
       this.jump();
       this.sleepAnimationPlayed = false;
-      this.snoreSound.pause();
+      this.world.audioManager.snoreSound.pause();
     }
   }
 
@@ -164,7 +159,7 @@ class Character extends MovableObject {
     setInterval(() => {
       if (this.isSleep() && this.sleepAnimationPlayed) {
         this.playAnimation(this.IMAGES_LONG_SLEEP);
-        this.snoreSound.play();
+        this.world.audioManager.snoreSound.play();
       }
     }, 200);
   }
@@ -208,12 +203,12 @@ class Character extends MovableObject {
       this.energy = 0;
     } else {
       this.lastHit = new Date().getTime();
-      this.hurtSound.play();
+      this.world.audioManager.hurtSound.play();
     }
   }
 
   jump() {
-    this.jumpSound.play();
+    this.world.audioManager.jumpSound.play();
     this.speedY = 32;
     this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
   }

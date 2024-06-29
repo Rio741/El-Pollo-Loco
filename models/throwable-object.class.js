@@ -15,9 +15,6 @@ class ThrowableObject extends MovableObject {
     "img/6_salsa_bottle/bottle_rotation/bottle_splash/6_bottle_splash.png",
   ];
 
-  throwSound = new Audio("audio/spin-l.mp3");
-  splashSound = new Audio("audio/splash.mp3");
-
   constructor(x, y, direction) {
     super().loadImage(
       "img/6_salsa_bottle/bottle_rotation/1_bottle_rotation.png"
@@ -48,7 +45,7 @@ class ThrowableObject extends MovableObject {
   throw() {
     this.speedY = 30;
     this.applyBottleGravity();
-    this.throwSound.play();
+    this.world.audioManager.throwSound.play();
     this.throwInterval = setInterval(() => {
       if (this.direction === "right") {
         this.x += 9;
@@ -79,8 +76,8 @@ class ThrowableObject extends MovableObject {
   }
 
   prepareForSplash() {
-    this.throwSound.pause();
-    this.splashSound.play();
+    this.world.audioManager.throwSound.pause();
+    this.world.audioManager.splashSound.play();
     clearInterval(this.throwInterval);
     this.throwInterval = null;
     this.loadImages(this.BOTTLE_SPLASHING_IMAGES);
@@ -115,15 +112,5 @@ class ThrowableObject extends MovableObject {
 
   markAsUsed() {
     this.isUsed = true;
-  }
-
-  muteSounds() {
-    this.throwSound.muted = true;
-    this.splashSound.muted = true;
-  }
-
-  unmuteSounds() {
-    this.throwSound.muted = false;
-    this.splashSound.muted = false;
   }
 }

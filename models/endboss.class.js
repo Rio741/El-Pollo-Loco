@@ -8,8 +8,6 @@ class Endboss extends MovableObject {
   walking = false;
   walkingSpeed = 3;
 
-  winSound = new Audio("audio/win.mp3");
-
   IMAGES_WALKING = [
     "img/4_enemie_boss_chicken/1_walk/G1.png",
     "img/4_enemie_boss_chicken/1_walk/G2.png",
@@ -145,15 +143,13 @@ class Endboss extends MovableObject {
       if (i < this.IMAGES_DEAD.length) {
         this.img = this.imageCache[this.IMAGES_DEAD[i]];
         i++;
-      } else {
-        this.removeFromWorld();
       }
     }, 300);
     this.winGame();
   }
 
   winGame() {
-    this.winSound.play();
+    this.world.audioManager.winSound.play();
     let sounds = document.querySelectorAll("audio");
     sounds.forEach((sound) => {
       sound.pause();

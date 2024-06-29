@@ -44,36 +44,40 @@ function toggleFullScreen() {
   }
 }
 
+function setAllSoundsMuted(muted) {
+  let path = world.audioManager;
+  let sounds = [
+    "backgroundMusic",
+    "endbossMusic",
+    "gunshotSound",
+    "endbossSound",
+    "bottleSound",
+    "winSound",
+    "gameOverSound",
+    "throwSound",
+    "splashSound",
+    "walking_sound",
+    "jumpSound",
+    "hurtSound",
+    "snoreSound",
+    "babyChickenSound",
+    "chickenSound",
+  ];
+  sounds.forEach((sound) => {
+    path[sound].muted = muted;
+  });
+}
+
 function soundOff() {
   document.getElementById("mute-btn").style.display = "flex";
   document.getElementById("sound-btn").style.display = "none";
-
-  world.character.walking_sound.muted = true;
-  world.character.jumpSound.muted = true;
-  world.character.hurtSound.muted = true;
-  world.character.snoreSound.muted = true;
-  world.chicken.chickenSound.muted = true;
-  world.babyChicken.babyChickenSound.muted = true;
-  world.bottleSound.muted = true;
-  world.coinSound.muted = true;
-  world.throwSound.muted = true;
-  world.splashSound.muted = true;
+  setAllSoundsMuted(true);
 }
 
 function soundOn() {
   document.getElementById("mute-btn").style.display = "none";
   document.getElementById("sound-btn").style.display = "flex";
-
-  world.character.walking_sound.muted = false;
-  world.character.jumpSound.muted = false;
-  world.character.hurtSound.muted = false;
-  world.character.snoreSound.muted = false;
-  world.enemies.chicken.chickenSound.muted = false;
-  world.enemies.babyChicken.babyChickenSound.muted = false;
-  world.bottleSound.muted = false;
-  world.coinSound.muted = false;
-  world.throwSound.muted = false;
-  world.splashSound.muted = false;
+  setAllSoundsMuted(false);
 }
 
 function openInfo() {
