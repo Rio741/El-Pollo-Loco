@@ -12,6 +12,7 @@ class World {
   throwableObjects = [];
   canCollideWithEnemy = true;
   audioManager = new AudioManager();
+  lastThrowTime = 0;
 
   constructor(canvas, keyboard) {
     this.ctx = canvas.getContext("2d");
@@ -28,17 +29,31 @@ class World {
     this.level.enemies.forEach((enemy) => (enemy.world = this));
   }
 
+  loseGame() {
+    setTimeout(() => {
+      this.audioManager.gameOverSound.play();
+      let gameOverImg = document.getElementById("game-over-img");
+      gameOverImg.style.display = "flex";
+    }, 1000);
+  }
+
+  winGame() {
+    this.audioManager.winSound.play();
+    let winImg = document.getElementById("win-img");
+    winImg.style.display = "flex";
+  }
+
   run() {
     setInterval(() => {
       this.checkEnemyCollisions();
-      this.checkItemCollisions();
       this.checkThrowableCollisions();
       this.checkJumpOnEnemies();
-      this.checkEndbossStartWalking();
-    }, 40);
+    }, 50);
 
     setInterval(() => {
       this.checkThrowObjects();
+      this.checkEndbossStartWalking();
+      this.checkItemCollisions();
     }, 200);
 
     setInterval(() => {
@@ -78,7 +93,12 @@ class World {
   }
 
   checkThrowObjects() {
-    if (this.keyboard.D && this.character.collectedBottles > 0) {
+    const now = Date.now();
+    if (
+      this.keyboard.D &&
+      this.character.collectedBottles > 0 &&
+      now - this.lastThrowTime >= 1000
+    ) {
       let bottleDirection = this.character.otherDirection ? "left" : "right";
       let bottle = new ThrowableObject(
         this.character.x + (bottleDirection === "right" ? 100 : -40),
@@ -89,6 +109,7 @@ class World {
       let bottlePercentage = (this.character.collectedBottles / 6) * 100;
       this.character.collectedBottles--;
       this.bottleStatusBar.setPercentage(bottlePercentage);
+      this.lastThrowTime = now;
     }
   }
 

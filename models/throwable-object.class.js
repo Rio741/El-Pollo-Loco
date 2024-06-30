@@ -45,7 +45,11 @@ class ThrowableObject extends MovableObject {
   throw() {
     this.speedY = 30;
     this.applyBottleGravity();
-    this.world.audioManager.throwSound.play();
+    let throwSound = new Audio("audio/spin-l.mp3");
+    throwSound.play();
+    if (world.audioManager.backgroundMusic.muted) {
+      throwSound.muted = true;
+    }
     this.throwInterval = setInterval(() => {
       if (this.direction === "right") {
         this.x += 9;
@@ -53,14 +57,14 @@ class ThrowableObject extends MovableObject {
         this.x -= 9;
       }
     }, 25);
-    this.animateThrowingBottle();
+    this.animateThrowingBottle(throwSound);
   }
 
-  animateThrowingBottle() {
+  animateThrowingBottle(throwSound) {
     const intervalId = setInterval(() => {
       if (this.isUsed) {
         clearInterval(intervalId);
-        this.animateSplashingBottle();
+        this.animateSplashingBottle(throwSound);
       } else {
         this.playAnimation(this.BOTTLE_ROTATION_IMAGES);
       }
@@ -70,14 +74,21 @@ class ThrowableObject extends MovableObject {
     this.world.removeObject(this);
   }
 
-  animateSplashingBottle() {
-    this.prepareForSplash();
+  animateSplashingBottle(throwSound) {
+    this.prepareForSplash(throwSound);
     this.playSplashAnimation();
   }
 
-  prepareForSplash() {
-    this.world.audioManager.throwSound.pause();
-    this.world.audioManager.splashSound.play();
+  prepareForSplash(throwSound) {
+    if (throwSound) {
+      throwSound.pause();
+      throwSound.currentTime = 0;
+    }
+    let splashSound = new Audio("audio/splash.mp3");
+    splashSound.play();
+    if (world.audioManager.backgroundMusic.muted) {
+      splashSound.muted = true;
+    }
     clearInterval(this.throwInterval);
     this.throwInterval = null;
     this.loadImages(this.BOTTLE_SPLASHING_IMAGES);

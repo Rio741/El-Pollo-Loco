@@ -23,6 +23,7 @@ function startGame() {
   initLevel();
   let canvas = document.getElementById("canvas");
   document.getElementById("startScreen").style.display = "none";
+  document.getElementById("sound-btn").style.display = "flex";
   document.getElementById("play-btn").style.display = "none";
   document.getElementById("privacy-policity-btn").style.display = "none";
   document.getElementById("legal-notice-btn").style.display = "none";
@@ -45,27 +46,29 @@ function toggleFullScreen() {
 }
 
 function setAllSoundsMuted(muted) {
-  let path = world.audioManager;
-  let sounds = [
-    "backgroundMusic",
-    "endbossMusic",
-    "gunshotSound",
-    "endbossSound",
-    "bottleSound",
-    "winSound",
-    "gameOverSound",
-    "throwSound",
-    "splashSound",
-    "walking_sound",
-    "jumpSound",
-    "hurtSound",
-    "snoreSound",
-    "babyChickenSound",
-    "chickenSound",
-  ];
-  sounds.forEach((sound) => {
-    path[sound].muted = muted;
-  });
+  if (world && world.audioManager) {
+    let path = world.audioManager;
+    let sounds = [
+      "backgroundMusic",
+      "endbossMusic",
+      "gunshotSound",
+      "endbossSound",
+      "bottleSound",
+      "winSound",
+      "gameOverSound",
+      "walking_sound",
+      "jumpSound",
+      "hurtSound",
+      "snoreSound",
+      "babyChickenSound",
+      "chickenSound",
+    ];
+    sounds.forEach((sound) => {
+      if (path[sound]) {
+        path[sound].muted = muted;
+      }
+    });
+  }
 }
 
 function soundOff() {
@@ -95,68 +98,56 @@ function closePopup() {
   document.getElementById("legal-notice-container").style.display = "none";
 }
 
-function openPrivacyPolicity() {
-  var privacyPolicityContainer = document.getElementById(
-    "privacy-policity-container"
-  );
+function toggleContent(containerId, contentId, url) {
+  var container = document.getElementById(containerId);
   if (
-    privacyPolicityContainer.style.display === "none" ||
-    privacyPolicityContainer.style.display === "flex"
+    container.style.display === "none" ||
+    container.style.display === "flex"
   ) {
-    // Laden des Inhalts von policity.html über XMLHttpRequest
+    // Laden des Inhalts über XMLHttpRequest
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function () {
       if (xhr.readyState === XMLHttpRequest.DONE) {
         if (xhr.status === 200) {
-          var privacyPolicityContent = document.getElementById(
-            "privacy-policity-content"
-          );
-          privacyPolicityContent.innerHTML = xhr.responseText;
-          privacyPolicityContainer.style.display = "block"; // Zeige das Overlay an
+          var content = document.getElementById(contentId);
+          content.innerHTML = xhr.responseText;
+          container.style.display = "block"; // Zeige das Overlay an
         } else {
-          console.error(
-            "Fehler beim Laden der Datei privacy-policity.html:",
-            xhr.status
-          );
+          console.error("Fehler beim Laden der Datei " + url + ":", xhr.status);
         }
       }
     };
-    xhr.open("GET", "privacy-policity.html", true);
+    xhr.open("GET", url, true);
     xhr.send();
   } else {
-    privacyPolicityContainer.style.display = "none"; // Verstecke das Overlay
+    container.style.display = "none"; // Verstecke das Overlay
   }
 }
 
+function openPrivacyPolicity() {
+  toggleContent(
+    "privacy-policity-container",
+    "privacy-policity-content",
+    "privacy-policity.html"
+  );
+}
+
 function openLegalNotice() {
-  var legalNoticeContainer = document.getElementById("legal-notice-container");
-  if (
-    legalNoticeContainer.style.display === "none" ||
-    legalNoticeContainer.style.display === "flex"
-  ) {
-    // Laden des Inhalts von policity.html über XMLHttpRequest
-    var xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === XMLHttpRequest.DONE) {
-        if (xhr.status === 200) {
-          var LegalNoticeContent = document.getElementById(
-            "legal-notice-content"
-          );
-          LegalNoticeContent.innerHTML = xhr.responseText;
-          legalNoticeContainer.style.display = "block"; // Zeige das Overlay an
-        } else {
-          console.error(
-            "Fehler beim Laden der Datei policity.html:",
-            xhr.status
-          );
-        }
-      }
-    };
-    xhr.open("GET", "legal-notice.html", true);
-    xhr.send();
-  } else {
-    legalNoticeContainer.style.display = "none"; // Verstecke das Overlay
-  }
+  toggleContent(
+    "legal-notice-container",
+    "legal-notice-content",
+    "legal-notice.html"
+  );
+}
+
+function closePopup() {
+  document.getElementById("info-container").style.display = "none";
+  document.getElementById("privacy-policity-container").style.display = "none";
+  document.getElementById("legal-notice-container").style.display = "none";
+}
+
+function doNotClose(event) {
+  event.stopPropagation();
 }
 
 window.addEventListener("orientationchange", checkOrientation);
@@ -171,116 +162,3 @@ function checkOrientation() {
     warning.style.display = "none";
   }
 }
-
-function doNotClose(event) {
-  event.stopPropagation();
-}
-
-window.addEventListener("keydown", (e) => {
-  if (e.keyCode == 39) {
-    keyboard.RIGHT = true;
-  }
-  if (e.keyCode == 37) {
-    keyboard.LEFT = true;
-  }
-  if (e.keyCode == 38) {
-    keyboard.UP = true;
-  }
-  if (e.keyCode == 40) {
-    keyboard.DOWN = true;
-  }
-  if (e.keyCode == 32) {
-    keyboard.SPACE = true;
-  }
-  if (e.keyCode == 68) {
-    keyboard.D = true;
-  }
-});
-
-window.addEventListener("keyup", (e) => {
-  if (e.keyCode == 39) {
-    keyboard.RIGHT = false;
-  }
-  if (e.keyCode == 37) {
-    keyboard.LEFT = false;
-  }
-  if (e.keyCode == 38) {
-    keyboard.UP = false;
-  }
-  if (e.keyCode == 40) {
-    keyboard.DOWN = false;
-  }
-  if (e.keyCode == 32) {
-    keyboard.SPACE = false;
-  }
-  if (e.keyCode == 68) {
-    keyboard.D = false;
-  }
-});
-
-document.addEventListener("DOMContentLoaded", function () {
-  const leftBtn = document.getElementById("left-btn");
-  const rightBtn = document.getElementById("right-btn");
-  const jumpBtn = document.getElementById("jump-btn");
-  const throwBtn = document.getElementById("throw-btn");
-
-  leftBtn.addEventListener("mousedown", () => {
-    keyboard.LEFT = true;
-  });
-  leftBtn.addEventListener("mouseup", () => {
-    keyboard.LEFT = false;
-  });
-  leftBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    keyboard.LEFT = true;
-  });
-  leftBtn.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    keyboard.LEFT = false;
-  });
-
-  rightBtn.addEventListener("mousedown", () => {
-    keyboard.RIGHT = true;
-  });
-  rightBtn.addEventListener("mouseup", () => {
-    keyboard.RIGHT = false;
-  });
-  rightBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    keyboard.RIGHT = true;
-  });
-  rightBtn.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    keyboard.RIGHT = false;
-  });
-
-  jumpBtn.addEventListener("mousedown", () => {
-    keyboard.SPACE = true;
-  });
-  jumpBtn.addEventListener("mouseup", () => {
-    keyboard.SPACE = false;
-  });
-  jumpBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    keyboard.SPACE = true;
-  });
-  jumpBtn.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    keyboard.SPACE = false;
-  });
-
-  throwBtn.addEventListener("mousedown", () => {
-    keyboard.D = true;
-  });
-  throwBtn.addEventListener("mouseup", () => {
-    keyboard.D = false;
-  });
-  throwBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    keyboard.D = true;
-  });
-  throwBtn.addEventListener("touchend", (e) => {
-    e.preventDefault();
-    keyboard.D = false;
-  });
-});

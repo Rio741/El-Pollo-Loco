@@ -3,7 +3,6 @@ class Character extends MovableObject {
   height = 300;
   width = 140;
   speed = 6;
-
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -12,6 +11,7 @@ class Character extends MovableObject {
     "img/2_character_pepe/2_walk/W-25.png",
     "img/2_character_pepe/2_walk/W-26.png",
   ];
+
   IMAGES_JUMPING = [
     "img/2_character_pepe/3_jump/J-31.png",
     "img/2_character_pepe/3_jump/J-32.png",
@@ -52,7 +52,7 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/idle/I-9.png",
     "img/2_character_pepe/1_idle/idle/I-10.png",
   ];
-
+  
   IMAGES_LONG_SLEEP = [
     "img/2_character_pepe/1_idle/long_idle/I-11.png",
     "img/2_character_pepe/1_idle/long_idle/I-12.png",
@@ -77,6 +77,31 @@ class Character extends MovableObject {
     this.applyGravity();
     this.animate();
   }
+/*
+  animate() {
+    const animateInterval = () => {
+      this.updateCharacterState();
+      this.animateDead();
+      this.animateSleep();
+      this.animateLongSleep();
+      this.animateHurt();
+      this.animateJump();
+      this.animateWalk();
+      requestAnimationFrame(animateInterval);
+    };
+    animateInterval();
+  }
+
+  updateCharacterState() {
+    this.world.audioManager.walking_sound.pause();
+    this.world.audioManager.walking_sound.currentTime = 0;
+    this.world.audioManager.snoreSound.pause();
+    this.world.audioManager.snoreSound.currentTime = 0;
+    this.handleRightMovement();
+    this.handleLeftMovement();
+    this.handleJump();
+    this.updateCameraPosition();
+  }*/
 
   animate() {
     this.animateMovement();
@@ -91,6 +116,9 @@ class Character extends MovableObject {
   animateMovement() {
     setInterval(() => {
       this.world.audioManager.walking_sound.pause();
+      this.world.audioManager.walking_sound.currentTime = 0;
+      this.world.audioManager.snoreSound.pause();
+      this.world.audioManager.snoreSound.currentTime = 0;
       this.handleRightMovement();
       this.handleLeftMovement();
       this.handleJump();
@@ -98,13 +126,13 @@ class Character extends MovableObject {
     }, 1000 / 60);
   }
 
+
   handleRightMovement() {
     if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
       this.moveRight();
       this.otherDirection = false;
       this.world.audioManager.walking_sound.play();
       this.sleepAnimationPlayed = false;
-      this.world.audioManager.snoreSound.pause();
     }
   }
 
@@ -114,7 +142,6 @@ class Character extends MovableObject {
       this.otherDirection = true;
       this.world.audioManager.walking_sound.play();
       this.sleepAnimationPlayed = false;
-      this.world.audioManager.snoreSound.pause();
     }
   }
 
@@ -122,7 +149,6 @@ class Character extends MovableObject {
     if (this.world.keyboard.SPACE && !this.isAboveGround()) {
       this.jump();
       this.sleepAnimationPlayed = false;
-      this.world.audioManager.snoreSound.pause();
     }
   }
 
@@ -225,7 +251,7 @@ class Character extends MovableObject {
 
   isDead() {
     if (this.energy == 0) {
-      this.loseGame();
+      this.world.loseGame();
       return true;
     }
     return false;

@@ -49,9 +49,9 @@ class StatusBar extends DrawableObject {
       StatusBar.COIN_IMAGES.includes(imagePaths[0]) ||
       StatusBar.BOTTLE_IMAGES.includes(imagePaths[0])
     ) {
-      this.setPercentage(0); // Setze das Anfangsbild auf 0 für die Münzanzeige oder Flaschen
+      this.setPercentage(0); //for Items
     } else {
-      this.setPercentage(100); // Setze das Anfangsbild auf 100 für andere Statusleisten
+      this.setPercentage(100);
     }
   }
 

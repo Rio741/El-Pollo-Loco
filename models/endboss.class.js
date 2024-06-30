@@ -51,16 +51,20 @@ class Endboss extends MovableObject {
 
   constructor() {
     super().loadImage(this.IMAGES_ALERT[0]);
+    this.loadAllImages();
+    this.x = 3300;
+    this.animateAlert();
+  }
+
+  loadAllImages() {
     this.loadImages(this.IMAGES_ALERT);
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGES_DEAD);
     this.loadImages(this.IMAGES_HURT);
     this.loadImages(this.IMAGES_ATTACK);
-    this.x = 3300;
-    this.animate();
   }
 
-  animate() {
+  animateAlert() {
     this.animationInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_ALERT);
     }, 200);
@@ -79,85 +83,48 @@ class Endboss extends MovableObject {
   }
 
   startAttackAnimation() {
-    if (this.attackAnimationInterval) return; // Verhindern, dass mehrere Angriffsintervalle gleichzeitig laufen
+    if (this.attackAnimationInterval) return;
     this.clearEndbossIntervals();
-    let i = 0;
     this.walking = false;
-    this.attackAnimationInterval = setInterval(() => {
-      if (i < this.IMAGES_ATTACK.length) {
-        this.img = this.imageCache[this.IMAGES_ATTACK[i]];
+    this.attackAnimationInterval = this.animateSequence(this.IMAGES_ATTACK, 200, () => {
+      if (!this.isEnemyDead) {
+        this.startWalking();
+      }
+    });
+  }
+
+  animateSequence(images, interval, onComplete) {
+    let i = 0;
+    const animationInterval = setInterval(() => {
+      if (i < images.length) {
+        this.img = this.imageCache[images[i]];
         i++;
       } else {
-        clearInterval(this.attackAnimationInterval);
-        this.attackAnimationInterval = null; // Zurücksetzen des Intervalls
-        if (!this.isEnemyDead) {
-          this.startWalking();
-        }
+        clearInterval(animationInterval);
+        onComplete();
       }
-    }, 200);
+    }, interval);
+    return animationInterval;
   }
 
   hurt() {
-    if (this.hurtAnimationInterval) return; // Verhindern, dass mehrere Verletzungsintervalle gleichzeitig laufen
+    if (this.hurtAnimationInterval) return;
     this.clearEndbossIntervals();
-    let i = 0;
     this.walking = false;
-    this.hurtAnimationInterval = setInterval(() => {
-      if (i < this.IMAGES_HURT.length) {
-        this.img = this.imageCache[this.IMAGES_HURT[i]];
-        i++;
-      } else {
-        clearInterval(this.hurtAnimationInterval);
-        this.hurtAnimationInterval = null; // Zurücksetzen des Intervalls
-        if (!this.isEnemyDead) {
-          this.startWalking();
-          this.startAttackAnimation(); // Sicherstellen, dass die Angriff-Animation neu gestartet wird
-        }
+    this.hurtAnimationInterval = this.animateSequence(this.IMAGES_HURT, 200, () => {
+      if (!this.isEnemyDead) {
+        this.startWalking();
+        this.startAttackAnimation();
       }
-    }, 200);
-  }
-
-  hurt() {
-    this.clearEndbossIntervals();
-    let i = 0;
-    this.walking = false;
-    this.hurtAnimationInterval = setInterval(() => {
-      if (i < this.IMAGES_HURT.length) {
-        this.img = this.imageCache[this.IMAGES_HURT[i]];
-        i++;
-      } else {
-        clearInterval(this.hurtAnimationInterval); // Clear the interval when done
-        if (!this.isEnemyDead) {
-          this.startWalking();
-        }
-      }
-    }, 200);
+    });
   }
 
   die() {
     this.isEnemyDead = true;
     this.clearEndbossIntervals();
-
-    let i = 0;
-    const deathAnimationInterval = setInterval(() => {
-      if (i < this.IMAGES_DEAD.length) {
-        this.img = this.imageCache[this.IMAGES_DEAD[i]];
-        i++;
-      }
-    }, 300);
-    this.winGame();
-  }
-
-  winGame() {
-    this.world.audioManager.winSound.play();
-    let sounds = document.querySelectorAll("audio");
-    sounds.forEach((sound) => {
-      sound.pause();
-      sound.currentTime = 0;
+    this.animateSequence(this.IMAGES_DEAD, 300, () => {
+      this.world.winGame();
     });
-
-    let winImg = document.getElementById("win-img");
-    winImg.style.display = "flex";
   }
 
   clearEndbossIntervals() {
@@ -165,7 +132,7 @@ class Endboss extends MovableObject {
     clearInterval(this.walkingInterval);
     clearInterval(this.attackAnimationInterval);
     clearInterval(this.hurtAnimationInterval);
-    this.attackAnimationInterval = null; // Zurücksetzen des Intervalls
-    this.hurtAnimationInterval = null; // Zurücksetzen des Intervalls
+    this.attackAnimationInterval = null;
+    this.hurtAnimationInterval = null;
   }
 }

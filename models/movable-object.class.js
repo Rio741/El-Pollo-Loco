@@ -12,7 +12,7 @@ class MovableObject extends DrawableObject {
   isAboveGround() {
     if (this instanceof ThrowableObject) {
       return this.y < 340;
-    } else {
+    } else { //character
       return this.y < 135;
     }
   }
@@ -65,14 +65,6 @@ class MovableObject extends DrawableObject {
     if (this.collectedBottles > 5) {
       this.collectedBottles = 5;
     }
-  }
-
-  loseGame() {
-    setTimeout(() => {
-      this.world.audioManager.gameOverSound.play();
-      let gameOverImg = document.getElementById("game-over-img");
-      gameOverImg.style.display = "flex";
-    }, 2000);
   }
 
   playAnimation(images, playOnce = false) {

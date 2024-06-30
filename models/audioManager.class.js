@@ -7,8 +7,6 @@ class AudioManager {
     this.endbossSound = new Audio("audio/endboss.mp3");
     this.winSound = new Audio("audio/win.mp3");
     this.gameOverSound = new Audio("audio/game-over.mp3");
-    this.throwSound = new Audio("audio/spin-l.mp3");
-    this.splashSound = new Audio("audio/splash.mp3");
     this.walking_sound = new Audio("audio/running.mp3");
     this.jumpSound = new Audio("audio/jump.mp3");
     this.hurtSound = new Audio("audio/hurt.mp3");
