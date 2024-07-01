@@ -12,12 +12,11 @@ class Bottle extends MovableObject {
     this.loadImages(this.IMAGES_BOTTLE);
     this.x = x;
     this.y = y;
-    this.animate();
   }
 
   animate() {
-    setInterval(() => {
+    this.world.addInterval(setInterval(() => {
       this.playAnimation(this.IMAGES_BOTTLE);
-    }, 700);
+    }, 700));
   }
 }

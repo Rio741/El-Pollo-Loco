@@ -63,7 +63,7 @@ canvas {
   border-radius: 12px;
 }
 
-#play-btn {
+#play-btn, #home-btn {
   position: absolute;
   z-index: 9999;
   height: 64px;
@@ -73,11 +73,17 @@ canvas {
   transform: translate(-50%, -50%);
   cursor: pointer;
   transition: transform 0.3s, filter 0.3s;
+  filter: brightness(0.8);
 }
 
 #play-btn:hover {
   transform: translate(-50%, -50%) scale(1.2);
   filter: brightness(0);
+}
+
+#home-btn:hover{
+  transform: translate(-50%, -50%) scale(1.2);
+  filter: brightness(0.5);
 }
 
 .transform-btn:hover {
@@ -168,7 +174,8 @@ canvas {
 #sound-text,
 #mute-text {
   top: 10px;
-  left: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 #legal-notice-text {
@@ -273,6 +280,9 @@ li {
 .close-btn:hover {
   background-color: rgba(165, 42, 42, 0.667);
 }
+
+
+
 
 @keyframes fadeIn {
   from {

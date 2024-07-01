@@ -45,42 +45,25 @@ function toggleFullScreen() {
   }
 }
 
-function setAllSoundsMuted(muted) {
-  if (world && world.audioManager) {
-    let path = world.audioManager;
-    let sounds = [
-      "backgroundMusic",
-      "endbossMusic",
-      "gunshotSound",
-      "endbossSound",
-      "bottleSound",
-      "winSound",
-      "gameOverSound",
-      "walking_sound",
-      "jumpSound",
-      "hurtSound",
-      "snoreSound",
-      "babyChickenSound",
-      "chickenSound",
-    ];
-    sounds.forEach((sound) => {
-      if (path[sound]) {
-        path[sound].muted = muted;
-      }
-    });
-  }
-}
-
 function soundOff() {
   document.getElementById("mute-btn").style.display = "flex";
   document.getElementById("sound-btn").style.display = "none";
-  setAllSoundsMuted(true);
+  if (world && world.audioManager) {
+    world.audioManager.setAllSoundsMuted(true);
+  }
 }
 
 function soundOn() {
   document.getElementById("mute-btn").style.display = "none";
   document.getElementById("sound-btn").style.display = "flex";
-  setAllSoundsMuted(false);
+  if (world && world.audioManager) {
+    world.audioManager.setAllSoundsMuted(false);
+  }
+}
+
+function goHome() {
+  // Logic to go back to the start screen
+  window.location.href = "index.html"; // Assuming "index.html" is your start screen
 }
 
 function openInfo() {

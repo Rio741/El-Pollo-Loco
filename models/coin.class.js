@@ -9,12 +9,11 @@ class Coin extends MovableObject {
     this.loadImages(this.IMAGES_COIN);
     this.x = x;
     this.y = y;
-    this.animate();
   }
 
   animate() {
-    setInterval(() => {
+    this.world.addInterval(setInterval(() => {
       this.playAnimation(this.IMAGES_COIN);
-    }, 700);
+    }, 700));
   }
 }

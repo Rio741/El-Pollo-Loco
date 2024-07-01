@@ -16,25 +16,24 @@ class BabyChicken extends MovableObject {
     this.loadImages(this.IMAGES_DEAD);
     this.x = 200 + Math.random() * 500 + 720;
     this.speed = 0.15 + Math.random() * 0.3;
-    this.animate();
   }
 
   animate() {
-    setInterval(() => {
+    this.world.addInterval(setInterval(() => {
       if (!this.isEnemyDead) {
         this.moveLeft();
       }
-    }, 1000 / 60);
+    }, 1000 / 60));
 
-    setInterval(() => {
+    this.world.addInterval(setInterval(() => {
       if (!this.isEnemyDead) {
         this.playAnimation(this.IMAGES_WALKING);
       }
-    }, 200);
+    }, 200));
   }
 
   die() {
-    this.world.audioManager.babyChickenSound.play();
+    this.world.audioManager.chickenSound.play();
     this.isEnemyDead = true;
     this.loadImage(this.IMAGES_DEAD[0]);
     setTimeout(() => {
@@ -49,3 +48,4 @@ class BabyChicken extends MovableObject {
     }
   }
 }
+

@@ -3,6 +3,7 @@ class Character extends MovableObject {
   height = 300;
   width = 140;
   speed = 6;
+  world;
   IMAGES_WALKING = [
     "img/2_character_pepe/2_walk/W-21.png",
     "img/2_character_pepe/2_walk/W-22.png",
@@ -66,8 +67,9 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/long_idle/I-20.png",
   ];
 
-  constructor() {
+  constructor(world) {
     super().loadImage("img/2_character_pepe/2_walk/W-21.png");
+    this.world = world; 
     this.loadImages(this.IMAGES_WALKING);
     this.loadImages(this.IMAGES_JUMPING);
     this.loadImages(this.IMAGES_DEAD);
@@ -114,7 +116,7 @@ class Character extends MovableObject {
   }
 
   animateMovement() {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       this.world.audioManager.walking_sound.pause();
       this.world.audioManager.walking_sound.currentTime = 0;
       this.world.audioManager.snoreSound.pause();
@@ -124,6 +126,7 @@ class Character extends MovableObject {
       this.handleJump();
       this.updateCameraPosition();
     }, 1000 / 60);
+    this.world.addInterval(intervalId);
   }
 
 
@@ -166,7 +169,7 @@ class Character extends MovableObject {
 
   animateSleep() {
     let sleepAnimationIndex = 0;
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       if (this.isSleep()) {
         if (!this.sleepAnimationPlayed) {
           let path = this.IMAGES_SLEEP[sleepAnimationIndex];
@@ -179,35 +182,39 @@ class Character extends MovableObject {
         }
       }
     }, 400);
+    this.world.addInterval(intervalId);
   }
 
   animateLongSleep() {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       if (this.isSleep() && this.sleepAnimationPlayed) {
         this.playAnimation(this.IMAGES_LONG_SLEEP);
         this.world.audioManager.snoreSound.play();
       }
     }, 200);
+    this.world.addInterval(intervalId);
   }
 
   animateHurt() {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       if (this.isHurt()) {
         this.playAnimation(this.IMAGES_HURT);
       }
     }, 100);
+    this.world.addInterval(intervalId);
   }
 
   animateJump() {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       if (this.isAboveGround()) {
         this.playAnimation(this.IMAGES_JUMPING);
       }
     }, 130);
+    this.world.addInterval(intervalId);
   }
 
   animateWalk() {
-    setInterval(() => {
+    const intervalId = setInterval(() => {
       if (
         !this.isDead() &&
         !this.isSleep() &&
@@ -221,6 +228,7 @@ class Character extends MovableObject {
         }
       }
     }, 80);
+    this.world.addInterval(intervalId);
   }
 
   hit() {

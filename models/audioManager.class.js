@@ -27,4 +27,25 @@ class AudioManager {
     this.endbossMusic.play();
     this.endbossSound.play();
   }
+
+  setAllSoundsMuted(muted) {
+    let sounds = [
+      this.bottleSound,
+      this.backgroundMusic,
+      this.endbossMusic,
+      this.gunshotSound,
+      this.endbossSound,
+      this.winSound,
+      this.gameOverSound,
+      this.walking_sound,
+      this.jumpSound,
+      this.hurtSound,
+      this.snoreSound,
+      this.chickenSound,
+      this.babyChickenSound,
+    ];
+    sounds.forEach((sound) => {
+      sound.muted = muted;
+    });
+  }
 }
