@@ -46,8 +46,8 @@ class ThrowableObject extends MovableObject {
     this.speedY = 30;
     this.applyBottleGravity();
     let throwSound = new Audio("audio/spin-l.mp3");
-    throwSound.play();
-    if (world.audioManager.backgroundMusic.muted) {
+    this.playSound(throwSound);
+    if (this.world.audioManager.backgroundMusic.muted) {
       throwSound.muted = true;
     }
     this.throwInterval = setInterval(() => {
@@ -70,6 +70,7 @@ class ThrowableObject extends MovableObject {
       }
     }, 100);
   }
+
   remove() {
     this.world.removeObject(this);
   }
@@ -80,14 +81,17 @@ class ThrowableObject extends MovableObject {
   }
 
   prepareForSplash(throwSound) {
-    if (throwSound) {
-      throwSound.pause();
-      throwSound.currentTime = 0;
+    if (!throwSound) {
+      throwSound = new Audio("audio/spin-l.mp3");
     }
-    let splashSound = new Audio("audio/splash.mp3");
-    splashSound.play();
-    if (world.audioManager.backgroundMusic.muted) {
-      splashSound.muted = true;
+    this.pauseSound(throwSound);
+
+    if (!this.splashSound || this.splashSound.paused) {
+      this.splashSound = new Audio("audio/splash.mp3");
+      this.playSound(this.splashSound);
+      if (this.world.audioManager.backgroundMusic.muted) {
+        this.splashSound.muted = true;
+      }
     }
     clearInterval(this.throwInterval);
     this.throwInterval = null;
@@ -123,5 +127,20 @@ class ThrowableObject extends MovableObject {
 
   markAsUsed() {
     this.isUsed = true;
+  }
+
+  playSound(sound) {
+    if (sound.paused) {
+      sound.play().catch((error) => {
+        // Handle the play() request error
+      });
+    }
+  }
+
+  pauseSound(sound) {
+    if (!sound.paused) {
+      sound.pause();
+      sound.currentTime = 0;
+    }
   }
 }

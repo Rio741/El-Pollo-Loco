@@ -3,7 +3,7 @@ class Cloud extends MovableObject {
   y = 0;
   height = 300;
   width = 700;
-  speed = 0.15;
+  speed = 0.3;
 
   constructor(image, startX) {
     super().loadImage(image);

@@ -85,7 +85,8 @@ function toggleContent(containerId, contentId, url) {
   var container = document.getElementById(containerId);
   if (
     container.style.display === "none" ||
-    container.style.display === "flex"
+    container.style.display === "flex" ||
+    container.style.display === ""
   ) {
     // Laden des Inhalts über XMLHttpRequest
     var xhr = new XMLHttpRequest();

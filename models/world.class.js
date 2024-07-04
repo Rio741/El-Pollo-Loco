@@ -31,24 +31,29 @@ class World {
   setWorld() {
     this.character.world = this;
     this.level.enemies.forEach((enemy) => {
-      enemy.world = this;
+      enemy.world = this;  // Set the world reference
       if (enemy instanceof Chicken || enemy instanceof BabyChicken) {
-        enemy.animate();  // Start animation after world is set
+        enemy.animate();
+      } else if (enemy instanceof Endboss) {
+        // Initialize Endboss specific settings
+        enemy.animateAlert(); // Start the alert animation
       }
     });
   
     this.level.clouds.forEach((cloud) => {
       cloud.world = this;
-      cloud.animate(); // Start cloud animation after world is set
+      cloud.animate();
     });
 
     this.level.items.forEach((item) => {
       item.world = this;
       if (item instanceof Coin || item instanceof Bottle) {
-        item.animate();  // Start animation after world is set
+        item.animate();
       }
     });
   }
+
+  
   
   loseGame() {
     if (!this.gameOver) {
@@ -88,12 +93,13 @@ class World {
       this.checkEnemyCollisions();
       this.checkThrowableCollisions();
       this.checkJumpOnEnemies();
+      this.checkItemCollisions();
     }, 40));
 
     this.allIntervals.push(setInterval(() => {
       this.checkThrowObjects();
       this.checkEndbossStartWalking();
-      this.checkItemCollisions();
+      
     }, 200));
 
     this.allIntervals.push(setInterval(() => {
@@ -115,9 +121,6 @@ class World {
     this.allIntervals = [];
   }
   
-
-
-
   checkEndbossStartWalking() {
     if (this.character.x >= 2800) {
       const endboss = this.level.enemies.find(
@@ -149,7 +152,7 @@ class World {
     if (
       this.keyboard.D &&
       this.character.collectedBottles > 0 &&
-      now - this.lastThrowTime >= 1000
+      now - this.lastThrowTime >= 700
     ) {
       let bottleDirection = this.character.otherDirection ? "left" : "right";
       let bottle = new ThrowableObject(
@@ -162,6 +165,7 @@ class World {
       this.character.collectedBottles--;
       this.bottleStatusBar.setPercentage(bottlePercentage);
       this.lastThrowTime = now;
+      this.character.sleepAnimationPlayed = false
     }
   }
 
@@ -207,30 +211,32 @@ class World {
     throwableObject.world = this;
     this.throwableObjects.push(throwableObject);
   }
-
   checkEnemyCollisions() {
     this.level.enemies.forEach((enemy) => {
       if (this.canCollideWithEnemy && this.character.isColliding(enemy)) {
-        if (this.character.isJumpingOn(enemy) && !(enemy instanceof Endboss)) {
-          enemy.die();
-          this.character.bounceOff();
-        } else {
-          if (enemy instanceof Endboss) {
-            this.character.energy = 0;
-            this.healthStatusBar.setPercentage(0);
-            this.character.isDead();
+        if (!enemy.isEnemyDead) { // Überprüfen, ob der Feind bereits tot ist
+          if (this.character.isJumpingOn(enemy) && !(enemy instanceof Endboss)) {
+            enemy.die();
+            this.character.bounceOff();
           } else {
-            this.character.hit();
-            this.healthStatusBar.setPercentage(this.character.energy);
+            if (enemy instanceof Endboss) {
+              this.character.energy = 0;
+              this.healthStatusBar.setPercentage(0);
+              this.character.isDead();
+            } else {
+              this.character.hit();
+              this.healthStatusBar.setPercentage(this.character.energy);
+            }
           }
+          this.canCollideWithEnemy = false;
+          setTimeout(() => {
+            this.canCollideWithEnemy = true;
+          }, 1000);
         }
-        this.canCollideWithEnemy = false;
-        setTimeout(() => {
-          this.canCollideWithEnemy = true;
-        }, 1000);
       }
     });
   }
+  
 
   checkItemCollisions() {
     this.level.items.forEach((item, index) => {

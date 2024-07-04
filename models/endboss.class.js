@@ -52,8 +52,8 @@ class Endboss extends MovableObject {
   constructor() {
     super().loadImage(this.IMAGES_ALERT[0]);
     this.loadAllImages();
-    this.x = 3300;
-    this.animateAlert();
+    this.x = 3500;
+    
   }
 
   loadAllImages() {
@@ -68,22 +68,25 @@ class Endboss extends MovableObject {
     this.animationInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_ALERT);
     }, 200);
+    this.world.addInterval(this.animationInterval);
   }
 
   startWalking() {
-    if (this.walking) return;
+    if (this.walking || this.isEnemyDead) return; // Add check for isEnemyDead
     this.walking = true;
     this.clearEndbossIntervals();
     this.animationInterval = setInterval(() => {
       this.playAnimation(this.IMAGES_WALKING);
     }, 130);
+    this.world.addInterval(this.animationInterval);
     this.walkingInterval = setInterval(() => {
       this.x -= this.walkingSpeed;
     }, 1000 / 60);
+    this.world.addInterval(this.walkingInterval);
   }
 
   startAttackAnimation() {
-    if (this.attackAnimationInterval) return;
+    if (this.attackAnimationInterval || this.isEnemyDead) return; // Add check for isEnemyDead
     this.clearEndbossIntervals();
     this.walking = false;
     this.attackAnimationInterval = this.animateSequence(this.IMAGES_ATTACK, 200, () => {
@@ -91,6 +94,7 @@ class Endboss extends MovableObject {
         this.startWalking();
       }
     });
+    this.world.addInterval(this.attackAnimationInterval);
   }
 
   animateSequence(images, interval, onComplete) {
@@ -104,11 +108,12 @@ class Endboss extends MovableObject {
         onComplete();
       }
     }, interval);
+    this.world.addInterval(animationInterval);
     return animationInterval;
   }
 
   hurt() {
-    if (this.hurtAnimationInterval) return;
+    if (this.hurtAnimationInterval || this.isEnemyDead) return; // Add check for isEnemyDead
     this.clearEndbossIntervals();
     this.walking = false;
     this.hurtAnimationInterval = this.animateSequence(this.IMAGES_HURT, 200, () => {
@@ -117,13 +122,15 @@ class Endboss extends MovableObject {
         this.startAttackAnimation();
       }
     });
+    this.world.addInterval(this.hurtAnimationInterval);
   }
 
   die() {
+    if (this.isEnemyDead) return; // Prevent the method from running multiple times
     this.isEnemyDead = true;
-    this.clearEndbossIntervals();
+    this.clearEndbossIntervals(); // Clear all current intervals
     this.animateSequence(this.IMAGES_DEAD, 300, () => {
-      this.world.winGame();
+      this.world.winGame(); // Notify the world that the game is won
     });
   }
 
@@ -132,6 +139,8 @@ class Endboss extends MovableObject {
     clearInterval(this.walkingInterval);
     clearInterval(this.attackAnimationInterval);
     clearInterval(this.hurtAnimationInterval);
+    this.animationInterval = null;
+    this.walkingInterval = null;
     this.attackAnimationInterval = null;
     this.hurtAnimationInterval = null;
   }

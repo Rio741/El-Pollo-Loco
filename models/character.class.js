@@ -79,31 +79,6 @@ class Character extends MovableObject {
     this.applyGravity();
     this.animate();
   }
-/*
-  animate() {
-    const animateInterval = () => {
-      this.updateCharacterState();
-      this.animateDead();
-      this.animateSleep();
-      this.animateLongSleep();
-      this.animateHurt();
-      this.animateJump();
-      this.animateWalk();
-      requestAnimationFrame(animateInterval);
-    };
-    animateInterval();
-  }
-
-  updateCharacterState() {
-    this.world.audioManager.walking_sound.pause();
-    this.world.audioManager.walking_sound.currentTime = 0;
-    this.world.audioManager.snoreSound.pause();
-    this.world.audioManager.snoreSound.currentTime = 0;
-    this.handleRightMovement();
-    this.handleLeftMovement();
-    this.handleJump();
-    this.updateCameraPosition();
-  }*/
 
   animate() {
     this.animateMovement();
@@ -117,10 +92,10 @@ class Character extends MovableObject {
 
   animateMovement() {
     const intervalId = setInterval(() => {
-      this.world.audioManager.walking_sound.pause();
-      this.world.audioManager.walking_sound.currentTime = 0;
-      this.world.audioManager.snoreSound.pause();
-      this.world.audioManager.snoreSound.currentTime = 0;
+      if (!this.world.keyboard.RIGHT && !this.world.keyboard.LEFT) {
+        this.pauseSound(this.world.audioManager.walking_sound);
+      }
+     
       this.handleRightMovement();
       this.handleLeftMovement();
       this.handleJump();
@@ -129,12 +104,18 @@ class Character extends MovableObject {
     this.world.addInterval(intervalId);
   }
 
+  pauseSound(sound) {
+    if (!sound.paused) {
+      sound.pause();
+      sound.currentTime = 0;
+    }
+  }
 
   handleRightMovement() {
     if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
       this.moveRight();
       this.otherDirection = false;
-      this.world.audioManager.walking_sound.play();
+      this.playSound(this.world.audioManager.walking_sound);
       this.sleepAnimationPlayed = false;
     }
   }
@@ -143,7 +124,7 @@ class Character extends MovableObject {
     if (this.world.keyboard.LEFT && this.x > -100) {
       this.moveLeft();
       this.otherDirection = true;
-      this.world.audioManager.walking_sound.play();
+      this.playSound(this.world.audioManager.walking_sound);
       this.sleepAnimationPlayed = false;
     }
   }
@@ -151,7 +132,16 @@ class Character extends MovableObject {
   handleJump() {
     if (this.world.keyboard.SPACE && !this.isAboveGround()) {
       this.jump();
+      this.playSound(this.world.audioManager.jumpSound);
       this.sleepAnimationPlayed = false;
+    }
+  }
+
+  playSound(sound) {
+    if (sound.paused) {
+      sound.play().catch((error) => {
+        // Handle the play() request error
+      });
     }
   }
 
@@ -189,7 +179,9 @@ class Character extends MovableObject {
     const intervalId = setInterval(() => {
       if (this.isSleep() && this.sleepAnimationPlayed) {
         this.playAnimation(this.IMAGES_LONG_SLEEP);
-        this.world.audioManager.snoreSound.play();
+        this.playSound(this.world.audioManager.snoreSound);
+      } else {
+        this.pauseSound(this.world.audioManager.snoreSound);
       }
     }, 200);
     this.world.addInterval(intervalId);
