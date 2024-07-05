@@ -9,10 +9,10 @@ class Cloud extends MovableObject {
     super().loadImage(image);
     this.x = Math.random() * 300 + startX;
   }
+
   animate() {
     this.world.addInterval(setInterval(() => {
       this.moveLeft();
     }, 1000 / 60));
   }
-  
 }

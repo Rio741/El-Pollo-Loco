@@ -15,6 +15,7 @@ class DrawableObject {
   draw(ctx) {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
+
   /*
   drawFrame(ctx) {
     if (this instanceof Character) {
@@ -68,7 +69,7 @@ class DrawableObject {
     ctx.rect(this.x + 40, this.y + 80, this.width - 50, this.height - 130);
     ctx.stroke();
   }
-    */
+  */
 
   loadImages(arr) {
     arr.forEach((path) => {

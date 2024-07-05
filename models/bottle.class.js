@@ -8,15 +8,24 @@ class Bottle extends MovableObject {
   ];
   
   constructor(x, y) {
-    super().loadImage("img/6_salsa_bottle/1_salsa_bottle_on_ground.png");
+    super();
+    this.loadImage("img/6_salsa_bottle/1_salsa_bottle_on_ground.png");
     this.loadImages(this.IMAGES_BOTTLE);
     this.x = x;
     this.y = y;
   }
 
   animate() {
-    this.world.addInterval(setInterval(() => {
-      this.playAnimation(this.IMAGES_BOTTLE);
-    }, 700));
+    super.animate(this.IMAGES_BOTTLE);
+  }
+
+  handleCollision(world, index) {
+    if (world.character.collectedBottles < 5) {
+      world.character.incrementBottleCount();
+      let bottlePercentage = world.character.collectedBottles * 20;
+      world.bottleStatusBar.setPercentage(bottlePercentage);
+      world.level.items.splice(index, 1);
+      world.audioManager.bottleSound.play();
+    }
   }
 }

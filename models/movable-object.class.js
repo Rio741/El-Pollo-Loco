@@ -9,6 +9,12 @@ class MovableObject extends DrawableObject {
   lastHit = 0;
   isEnemyDead;
 
+ animate(images, interval = 700) {
+    this.world.addInterval(setInterval(() => {
+      this.playAnimation(images);
+    }, interval));
+  }
+
   isAboveGround() {
     if (this instanceof ThrowableObject) {
       return this.y < 340;
@@ -67,7 +73,7 @@ class MovableObject extends DrawableObject {
     }
   }
 
-  playAnimation(images, playOnce = false) {
+  /*playAnimation(images, playOnce = false) {
     if (playOnce) {
       if (this.currentImage < images.length) {
         let path = images[this.currentImage];
@@ -82,8 +88,19 @@ class MovableObject extends DrawableObject {
       this.img = this.imageCache[path];
       this.currentImage++;
     }
-  }
+  }*/
 
+  playAnimation(images, playOnce = false) {
+    if (playOnce) {
+      this.currentImage = Math.min(this.currentImage, images.length - 1);
+    } else {
+      this.currentImage = this.currentImage % images.length;
+    }
+    let path = images[this.currentImage];
+    this.img = this.imageCache[path];
+    this.currentImage++;
+  }
+    
   moveRight() {
     this.x += this.speed;
     this.lastMoved = new Date().getTime();

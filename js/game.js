@@ -4,7 +4,6 @@ let keyboard = new Keyboard();
 let i = 1;
 
 function startGame() {
-  initLevel();
   let canvas = document.getElementById("canvas");
   document.getElementById("startScreen").style.display = "none";
   document.getElementById("sound-btn").style.display = "flex";
@@ -46,8 +45,7 @@ function soundOn() {
 }
 
 function goHome() {
-  // Logic to go back to the start screen
-  window.location.href = "index.html"; // Assuming "index.html" is your start screen
+  window.location.href = "index.html";
 }
 
 function openInfo() {
@@ -59,10 +57,20 @@ function openInfo() {
   }
 }
 
-function closePopup() {
-  document.getElementById("info-container").style.display = "none";
-  document.getElementById("privacy-policity-container").style.display = "none";
-  document.getElementById("legal-notice-container").style.display = "none";
+function openPrivacyPolicity() {
+  toggleContent(
+    "privacy-policity-container",
+    "privacy-policity-content",
+    "privacy-policity.html"
+  );
+}
+
+function openLegalNotice() {
+  toggleContent(
+    "legal-notice-container",
+    "legal-notice-content",
+    "legal-notice.html"
+  );
 }
 
 function toggleContent(containerId, contentId, url) {
@@ -92,22 +100,6 @@ function toggleContent(containerId, contentId, url) {
   }
 }
 
-function openPrivacyPolicity() {
-  toggleContent(
-    "privacy-policity-container",
-    "privacy-policity-content",
-    "privacy-policity.html"
-  );
-}
-
-function openLegalNotice() {
-  toggleContent(
-    "legal-notice-container",
-    "legal-notice-content",
-    "legal-notice.html"
-  );
-}
-
 function closePopup() {
   document.getElementById("info-container").style.display = "none";
   document.getElementById("privacy-policity-container").style.display = "none";
@@ -118,10 +110,6 @@ function doNotClose(event) {
   event.stopPropagation();
 }
 
-window.addEventListener("orientationchange", checkOrientation);
-window.addEventListener("resize", checkOrientation); // Added resize event to handle changes in window size.
-window.addEventListener("load", checkOrientation);
-
 function checkOrientation() {
   const warning = document.getElementById("orientation-warning");
   if (window.innerWidth < 760 && window.innerWidth < window.innerHeight) {
@@ -129,4 +117,8 @@ function checkOrientation() {
   } else {
     warning.style.display = "none";
   }
+
+window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("resize", checkOrientation);
+window.addEventListener("load", checkOrientation);
 }
