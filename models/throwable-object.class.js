@@ -131,9 +131,7 @@ class ThrowableObject extends MovableObject {
 
   playSound(sound) {
     if (sound.paused) {
-      sound.play().catch((error) => {
-        // Handle the play() request error
-      });
+      sound.play()
     }
   }
 

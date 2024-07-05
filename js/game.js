@@ -1,23 +1,7 @@
 let canvas;
 let world;
 let keyboard = new Keyboard();
-let intervalIds = [];
 let i = 1;
-
-function setStoppableInterval(fn, time) {
-  let id = setInterval(fn, time);
-  intervalIds.push(id);
-}
-
-//setStoppableInterval(handleRightMovement(), 40);
-
-function stopGame() {
-  intervalIds.forEach(clearInterval);
-}
-
-console.log(intervalIds);
-
-function init() {}
 
 function startGame() {
   initLevel();

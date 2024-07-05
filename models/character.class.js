@@ -140,7 +140,6 @@ class Character extends MovableObject {
   playSound(sound) {
     if (sound.paused) {
       sound.play().catch((error) => {
-        // Handle the play() request error
       });
     }
   }
@@ -236,7 +235,7 @@ class Character extends MovableObject {
   jump() {
     this.world.audioManager.jumpSound.play();
     this.speedY = 32;
-    this.lastMoved = new Date().getTime(); // Aktualisiere die Zeit der letzten Bewegung
+    this.lastMoved = new Date().getTime();
   }
 
   bounceOff() {

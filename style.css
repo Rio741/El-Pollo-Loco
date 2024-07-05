@@ -363,6 +363,7 @@ li {
     right: 14px;
     z-index: 100;
   }
+
 }
 
 @media only screen and (max-height: 480px) {
@@ -411,5 +412,9 @@ li {
     bottom: 18px;
     right: 14px;
     z-index: 100;
+  }
+  
+  #info-content{
+    display: flex;
   }
 }

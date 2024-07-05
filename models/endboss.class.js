@@ -7,6 +7,7 @@ class Endboss extends MovableObject {
   hitCount = 0;
   walking = false;
   walkingSpeed = 3;
+  canTakeDamage = false; 
 
   IMAGES_WALKING = [
     "img/4_enemie_boss_chicken/1_walk/G1.png",
@@ -53,7 +54,6 @@ class Endboss extends MovableObject {
     super().loadImage(this.IMAGES_ALERT[0]);
     this.loadAllImages();
     this.x = 3500;
-    
   }
 
   loadAllImages() {
@@ -72,7 +72,7 @@ class Endboss extends MovableObject {
   }
 
   startWalking() {
-    if (this.walking || this.isEnemyDead) return; // Add check for isEnemyDead
+    if (this.walking || this.isEnemyDead) return;
     this.walking = true;
     this.clearEndbossIntervals();
     this.animationInterval = setInterval(() => {
@@ -84,9 +84,10 @@ class Endboss extends MovableObject {
     }, 1000 / 60);
     this.world.addInterval(this.walkingInterval);
   }
+  
 
   startAttackAnimation() {
-    if (this.attackAnimationInterval || this.isEnemyDead) return; // Add check for isEnemyDead
+    if (this.attackAnimationInterval || this.isEnemyDead) return;
     this.clearEndbossIntervals();
     this.walking = false;
     this.attackAnimationInterval = this.animateSequence(this.IMAGES_ATTACK, 200, () => {
@@ -113,7 +114,7 @@ class Endboss extends MovableObject {
   }
 
   hurt() {
-    if (this.hurtAnimationInterval || this.isEnemyDead) return; // Add check for isEnemyDead
+    if (!this.canTakeDamage || this.hurtAnimationInterval || this.isEnemyDead) return;
     this.clearEndbossIntervals();
     this.walking = false;
     this.hurtAnimationInterval = this.animateSequence(this.IMAGES_HURT, 200, () => {
@@ -126,11 +127,11 @@ class Endboss extends MovableObject {
   }
 
   die() {
-    if (this.isEnemyDead) return; // Prevent the method from running multiple times
+    if (this.isEnemyDead) return;
     this.isEnemyDead = true;
-    this.clearEndbossIntervals(); // Clear all current intervals
+    this.clearEndbossIntervals();
     this.animateSequence(this.IMAGES_DEAD, 300, () => {
-      this.world.winGame(); // Notify the world that the game is won
+      this.world.winGame();
     });
   }
 
