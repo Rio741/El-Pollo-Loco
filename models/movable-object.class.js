@@ -9,38 +9,6 @@ class MovableObject extends DrawableObject {
   lastHit = 0;
   isEnemyDead;
 
- 
-  /**
-   * Loads a single image into the object.
-   * @param {string} path - The path to the image file.
-   */
-  loadImage(path) {
-    this.img = new Image();
-    this.img.src = path;
-  }
-
-
-  /**
-   * Draws the object on the canvas context.
-   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context to draw on.
-   */
-  draw(ctx) {
-    ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-  }
-
-
-  /**
-   * Loads multiple images into the image cache.
-   * @param {string[]} arr - Array of paths to images to load.
-   */
-  loadImages(arr) {
-    arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path] = img;
-    });
-  }
-
 
   /**
    * Animates the object by cycling through the provided images at a specified interval.
@@ -55,6 +23,41 @@ class MovableObject extends DrawableObject {
 
 
   /**
+   * Plays an animation sequence using the provided images array.
+   * @param {string[]} images - Array of image paths to animate.
+   * @param {boolean} [playOnce=false] - Flag indicating if the animation should play once.
+   */
+  playAnimation(images, playOnce = false) {
+    if (playOnce) {
+      this.currentImage = Math.min(this.currentImage, images.length - 1);
+    } else {
+      this.currentImage = this.currentImage % images.length;
+    }
+    let path = images[this.currentImage];
+    this.img = this.imageCache[path];
+    this.currentImage++;
+  }
+
+
+  /**
+   * Moves the object to the right.
+   */
+  moveRight() {
+    this.x += this.speed;
+    this.lastMoved = new Date().getTime();
+  }
+
+
+  /**
+   * Moves the object to the left.
+   */
+  moveLeft() {
+    this.x -= this.speed;
+    this.lastMoved = new Date().getTime();
+  }
+
+
+  /**
    * Checks if the object is above the ground level based on its type.
    * @returns {boolean} True if the object is above the ground, false otherwise.
    */
@@ -64,6 +67,20 @@ class MovableObject extends DrawableObject {
     } else { // Character
       return this.y < 135;
     }
+  }
+
+
+  /**
+   * Checks if the object is jumping on another movable object.
+   * @param {MovableObject} mo - The other movable object to check.
+   * @returns {boolean} True if the object is jumping on the other object, false otherwise.
+   */
+  isJumpingOn(mo) {
+    return (
+      this.speedY < 0 &&
+      this.y + this.height >= mo.y &&
+      this.y + this.height <= mo.y + mo.height
+    );
   }
 
 
@@ -117,6 +134,9 @@ class MovableObject extends DrawableObject {
    */
   incrementCoinCount() {
     this.collectedCoins++;
+    if (this.collectedCoins > 5) {
+      this.collectedCoins = 5;
+    }
   }
 
 
@@ -132,50 +152,90 @@ class MovableObject extends DrawableObject {
 
 
   /**
-   * Plays an animation sequence using the provided images array.
-   * @param {string[]} images - Array of image paths to animate.
-   * @param {boolean} [playOnce=false] - Flag indicating if the animation should play once.
+   * Checks for collisions between the character and enemies.
    */
-  playAnimation(images, playOnce = false) {
-    if (playOnce) {
-      this.currentImage = Math.min(this.currentImage, images.length - 1);
-    } else {
-      this.currentImage = this.currentImage % images.length;
-    }
-    let path = images[this.currentImage];
-    this.img = this.imageCache[path];
-    this.currentImage++;
+  checkEnemyCollisions() {
+    this.world.level.enemies.forEach((enemy) => {
+      if (this.world.canCollideWithEnemy && this.isColliding(enemy)) {
+        if (!enemy.isEnemyDead) {
+          if (this.isJumpingOn(enemy) && !(enemy instanceof Endboss)) {
+            enemy.die();
+            this.bounceOff();
+          } else {
+            if (enemy instanceof Endboss) {
+              this.energy = 0;
+              this.world.healthStatusBar.setPercentage(0);
+              this.isDead();
+            } else {
+              this.hit();
+              this.world.healthStatusBar.setPercentage(this.energy);
+            }
+          }
+          this.world.canCollideWithEnemy = false;
+          setTimeout(() => {
+            this.world.canCollideWithEnemy = true;
+          }, 1000);
+        }
+      }
+    });
   }
 
 
   /**
-   * Moves the object to the right.
+   * Checks for collisions between throwable objects and enemies.
+   * @param {Array<ThrowableObject>} throwableObjects - The throwable objects to check for collisions.
+   * @param {Array<MovableObject>} enemies - The enemies to check for collisions.
    */
-  moveRight() {
-    this.x += this.speed;
-    this.lastMoved = new Date().getTime();
+  checkThrowableCollisions(throwableObjects, enemies) {
+    throwableObjects.forEach((bottle) => {
+      if (!bottle.isUsed) {
+        enemies.forEach((enemy) => {
+          if (bottle.isColliding(enemy)) {
+            if (enemy instanceof Endboss) {
+              if (enemy.canTakeDamage) {
+                enemy.energy -= 20;
+                enemy.hurt();
+                if (enemy.energy < 0) enemy.energy = 0;
+                this.world.updateEndbossStatusBar();
+                if (enemy.energy <= 0 && !enemy.isEnemyDead) {
+                  enemy.die();
+                }
+              }
+            } else {
+              enemy.die();
+            }
+            bottle.markAsUsed();
+          }
+        });
+      }
+    });
   }
 
 
   /**
-   * Moves the object to the left.
+   * Checks for collisions between the character and items.
+   * @param {Array<MovableObject>} items - The items to check for collisions.
    */
-  moveLeft() {
-    this.x -= this.speed;
-    this.lastMoved = new Date().getTime();
+  checkItemCollisions(items) {
+    items.forEach((item, index) => {
+      if (this.isColliding(item)) {
+        item.handleCollision(this.world, index);
+      }
+    });
   }
 
   
   /**
-   * Checks if the object is jumping on another movable object.
-   * @param {MovableObject} mo - The other movable object to check.
-   * @returns {boolean} True if the object is jumping on the other object, false otherwise.
+   * Checks if the character is jumping on enemies.
    */
-  isJumpingOn(mo) {
-    return (
-      this.speedY < 0 &&
-      this.y + this.height >= mo.y &&
-      this.y + this.height <= mo.y + mo.height
-    );
+  checkJumpOnEnemies() {
+    this.world.level.enemies.forEach((enemy) => {
+      if (this.isColliding(enemy) && this.isJumpingOn(enemy)) {
+        if (!(enemy instanceof Endboss) && !enemy.isEnemyDead) {
+          enemy.die();
+          this.bounceOff();
+        }
+      }
+    });
   }
 }

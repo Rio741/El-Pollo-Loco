@@ -101,7 +101,7 @@ class Endboss extends MovableObject {
   }
 
 
-  /**
+   /**
    * Starts the attack animation.
    */
   startAttackAnimation() {
@@ -179,7 +179,7 @@ class Endboss extends MovableObject {
   }
 
   
-  /**
+   /**
    * Clears all animation intervals.
    */
   clearIntervals() {
@@ -189,3 +189,4 @@ class Endboss extends MovableObject {
     });
   }
 }
+ 

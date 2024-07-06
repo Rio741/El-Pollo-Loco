@@ -11,7 +11,6 @@ class Chicken extends MovableObject {
   
   IMAGES_DEAD = ["img/3_enemies_chicken/chicken_normal/2_dead/dead.png"];
 
-
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_normal/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
@@ -20,50 +19,47 @@ class Chicken extends MovableObject {
     this.speed = 0.5 + Math.random() * 1;
   }
 
+
+  /**
+   * Animates the chicken's movement and walking animation.
+   */
+   animate() {
+    this.world.addInterval(setInterval(() => {
+      if (!this.isEnemyDead) {
+        this.moveLeft();
+      }
+    }, 1000 / 60));
+
+    this.world.addInterval(setInterval(() => {
+      if (!this.isEnemyDead) {
+        this.playAnimation(this.IMAGES_WALKING);
+      }
+    }, 200));
+  }
+
   
   /**
- * Animates the enemy character's movement and walking animation.
- */
-animate() {
-  // Interval for movement
-  this.world.addInterval(setInterval(() => {
-    if (!this.isEnemyDead) {
-      this.moveLeft();
-    }
-  }, 1000 / 60));
-
-
-  // Interval for walking animation
-  this.world.addInterval(setInterval(() => {
-    if (!this.isEnemyDead) {
-      this.playAnimation(this.IMAGES_WALKING);
-    }
-  }, 200));
-}
-
-
-/**
- * Initiates the death sequence for the enemy character.
- * Plays a sound, sets the enemy as dead, and removes it from the world after a delay.
- */
-die() {
-  this.world.audioManager.chickenSound.play();
-  this.isEnemyDead = true;
-  this.loadImage(this.IMAGES_DEAD[0]);
-  setTimeout(() => {
-    this.removeFromWorld();
-  }, 1000);
-}
-
-
-/**
- * Removes the enemy character from the game world.
- * Finds its index in the enemies array and removes it if found.
- */
-removeFromWorld() {
-  const index = this.world.level.enemies.indexOf(this);
-  if (index > -1) {
-    this.world.level.enemies.splice(index, 1);
+   * Handles the death of the chicken.
+   * Plays the death sound, changes the image, and removes the chicken from the world after a delay.
+   */
+  die() {
+    this.world.audioManager.chickenSound.play();
+    this.isEnemyDead = true;
+    this.loadImage(this.IMAGES_DEAD[0]);
+    setTimeout(() => {
+      this.removeFromWorld();
+    }, 1000);
   }
-}
+
+
+  /**
+   * Removes the chicken from the world.
+   * Finds its index in the world's list of enemies and removes it.
+   */
+  removeFromWorld() {
+    const index = this.world.level.enemies.indexOf(this);
+    if (index > -1) {
+      this.world.level.enemies.splice(index, 1);
+    }
+  }
 }

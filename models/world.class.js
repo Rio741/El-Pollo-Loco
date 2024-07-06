@@ -25,9 +25,9 @@ class World {
     this.audioManager = new AudioManager();
     this.setupGame();
   }
-  
 
-  /**
+  
+/**
  * Sets up the game by initializing the drawing loop, setting the world context, running the game logic,
  * and playing the background music.
  */
@@ -37,7 +37,7 @@ setupGame() {
   this.run();
   this.audioManager.playBackgroundMusic();
 }
-
+  
 
 /**
  * Draws all game objects on the canvas. Clears the canvas and draws background objects,
@@ -66,7 +66,7 @@ draw() {
     this.draw();
   });
 }
-
+  
 
 /**
  * Sets the world context for the character and animates enemies, clouds, and items.
@@ -77,7 +77,7 @@ setWorld() {
   this.animateClouds();
   this.animateItems();
 }
-
+  
 
 /**
  * Animates all enemies in the game. Sets the world context for each enemy and starts the appropriate animation.
@@ -93,9 +93,9 @@ animateEnemies() {
     }
   });
 }
-
   
-  /**
+
+/**
  * Animates all clouds in the game. Sets the world context for each cloud and starts the animation.
  */
 animateClouds() {
@@ -104,7 +104,7 @@ animateClouds() {
     cloud.animate();
   });
 }
-
+  
 
 /**
  * Animates all items in the game. Sets the world context for each item and starts the animation
@@ -118,7 +118,7 @@ animateItems() {
     }
   });
 }
-
+  
 
 /**
  * Starts the main game logic by initiating collision checking, action checking, and endboss animation.
@@ -136,14 +136,14 @@ run() {
  */
 startCollisionChecking() {
   this.allIntervals.push(setInterval(() => {
-    this.checkEnemyCollisions();
-    this.checkThrowableCollisions();
-    this.checkJumpOnEnemies();
-    this.checkItemCollisions();
+    this.character.checkEnemyCollisions();
+    this.character.checkThrowableCollisions(this.throwableObjects, this.level.enemies);
+    this.character.checkJumpOnEnemies();
+    this.character.checkItemCollisions(this.level.items);
   }, 40));
 }
 
-
+  
 /**
  * Starts the interval for checking player actions such as throwing objects and starting the endboss walking animation.
  */
@@ -153,7 +153,7 @@ startActionChecking() {
     this.checkEndbossStartWalking();
   }, 200));
 }
-
+  
 
 /**
  * Starts the interval for animating the endboss if it is walking and not already attacking.
@@ -168,7 +168,7 @@ startEndbossAnimation() {
     }
   }, 6000));
 }
-
+  
 
 /**
  * Checks if the character has reached a specific position to start the endboss walking animation.
@@ -186,25 +186,9 @@ checkEndbossStartWalking() {
     }
   }
 }
-
+  
 
 /**
- * Checks if the character is jumping on enemies. If the character collides and jumps on an enemy
- * (excluding the endboss) and the enemy is not dead, the enemy dies and the character bounces off.
- */
-checkJumpOnEnemies() {
-  this.level.enemies.forEach((enemy) => {
-    if (this.character.isColliding(enemy) && this.character.isJumpingOn(enemy)) {
-      if (!(enemy instanceof Endboss) && !enemy.isEnemyDead) {
-        enemy.die();
-        this.character.bounceOff();
-      }
-    }
-  });
-}
-
-
- /**
  * Checks if the player has thrown an object. If the player has pressed the 'D' key, has collected bottles, 
  * and enough time has passed since the last throw, a new throwable object (bottle) is created and added to the game.
  */
@@ -244,36 +228,6 @@ updateEndbossStatusBar() {
 
 
 /**
- * Checks for collisions between throwable objects and enemies. If a collision is detected,
- * the enemy takes damage or dies, and the throwable object is marked as used.
- */
-checkThrowableCollisions() {
-  this.throwableObjects.forEach((bottle) => {
-    if (!bottle.isUsed) {
-      this.level.enemies.forEach((enemy) => {
-        if (bottle.isColliding(enemy)) {
-          if (enemy instanceof Endboss) {
-            if (enemy.canTakeDamage) {
-              enemy.energy -= 20;
-              enemy.hurt();
-              if (enemy.energy < 0) enemy.energy = 0;
-              this.updateEndbossStatusBar();
-              if (enemy.energy <= 0 && !enemy.isEnemyDead) {
-                enemy.die();
-              }
-            }
-          } else {
-            enemy.die();
-          }
-          bottle.markAsUsed();
-        }
-      });
-    }
-  });
-}
-
-
-/**
  * Adds a throwable object to the game world.
  * @param {ThrowableObject} throwableObject - The throwable object to be added.
  */
@@ -281,7 +235,7 @@ addThrowableObject(throwableObject) {
   throwableObject.world = this;
   this.throwableObjects.push(throwableObject);
 }
-
+  
 
 /**
  * Removes an object from the game world.
@@ -296,37 +250,6 @@ removeObject(object) {
 
 
 /**
- * Checks for collisions between the player and enemies. If a collision is detected,
- * the player takes damage, bounces off, or the enemy dies based on the type of collision.
- */
-checkEnemyCollisions() {
-  this.level.enemies.forEach((enemy) => {
-    if (this.canCollideWithEnemy && this.character.isColliding(enemy)) {
-      if (!enemy.isEnemyDead) {
-        if (this.character.isJumpingOn(enemy) && !(enemy instanceof Endboss)) {
-          enemy.die();
-          this.character.bounceOff();
-        } else {
-          if (enemy instanceof Endboss) {
-            this.character.energy = 0;
-            this.healthStatusBar.setPercentage(0);
-            this.character.isDead();
-          } else {
-            this.character.hit();
-            this.healthStatusBar.setPercentage(this.character.energy);
-          }
-        }
-        this.canCollideWithEnemy = false;
-        setTimeout(() => {
-          this.canCollideWithEnemy = true;
-        }, 1000);
-      }
-    }
-  });
-}
-
-
- /**
  * Handles the collision between the character and an enemy. Sets the character's energy to 0, marks the character as dead, updates the health status bar, and starts the endboss attack animation if the endboss is not dead.
  */
 handleEnemyCollision() {
@@ -339,18 +262,6 @@ handleEnemyCollision() {
   if (endboss && !endboss.isDead) {
     endboss.startAttackAnimation();
   }
-}
-
-
-/**
- * Checks for collisions between the character and items. If a collision is detected, handles the collision for the specific item.
- */
-checkItemCollisions() {
-  this.level.items.forEach((item, index) => {
-    if (this.character.isColliding(item)) {
-      item.handleCollision(this, index);
-    }
-  });
 }
 
 
@@ -436,10 +347,15 @@ loseGame() {
 showGameEndScreen(id, sound) {
   document.getElementById(id).style.display = "flex";
   document.getElementById("sound-btn").style.display = "none";
+  document.getElementById("mute-btn").style.display = "none";
+  document.getElementById("restart-btn").style.display = "flex";
+  document.getElementById("home-btn").style.display = "flex";
   this.audioManager.setAllSoundsMuted(true);
-  sound.muted = false;
-  sound.play();
-  document.getElementById("home-btn").style.display = "block";
+  let isMuted = localStorage.getItem('isMuted') === 'true';
+  if (!isMuted) {
+    sound.muted = false;
+    sound.play();
+  }
 }
 
 

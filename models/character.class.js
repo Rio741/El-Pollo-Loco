@@ -66,10 +66,10 @@ class Character extends MovableObject {
     "img/2_character_pepe/1_idle/long_idle/I-20.png",
   ];
 
-
   constructor(world) {
    super()
    this.world = world; 
+   this.lastMoved = new Date().getTime();
    this.loadInitialImage();
    this.loadAllImages();
    this.applyGravity();
@@ -77,7 +77,7 @@ class Character extends MovableObject {
   }
 
 
-  /**
+/**
  * Loads the initial image for the character.
  */
 loadInitialImage() {
@@ -108,8 +108,9 @@ animate() {
   this.animateLongSleep();
   this.animateHurt();
   this.animateJump();
+  this.animateWalk();
 }
-
+    
 
 /**
  * Animates basic movement like walking and jumping.
@@ -231,6 +232,7 @@ animateHurt() {
   const intervalId = setInterval(() => {
     if (this.isHurt()) {
       this.playAnimation(this.IMAGES_HURT);
+      this.sleepAnimationPlayed = false;
     }
   }, 100);
   this.world.addInterval(intervalId);
@@ -351,9 +353,10 @@ isDead() {
  * @returns {boolean} True if the character is in sleep state, false otherwise.
  */
 isSleep() {
+  if (!this.lastMoved) return false;
   let timePassed = new Date().getTime() - this.lastMoved;
   timePassed = timePassed / 1000;
-  return timePassed > 3;
+  return timePassed > 1;
 }
 
 

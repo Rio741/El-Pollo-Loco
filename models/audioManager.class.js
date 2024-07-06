@@ -1,6 +1,7 @@
 class AudioManager {
   constructor() {
     this.bottleSound = new Audio("audio/bottle.mp3");
+    this.coinSound = new Audio("audio/coin.mp3");
     this.backgroundMusic = new Audio("audio/background.mp3");
     this.endbossMusic = new Audio("audio/background-endboss.mp3");
     this.gunshotSound = new Audio("audio/gunshot.mp3");
@@ -24,7 +25,7 @@ class AudioManager {
     this.backgroundMusic.play();
   }
 
-
+  
   /**
    * Switches music to the endboss music, pauses background music,
    * and plays gunshot and endboss sounds.
@@ -37,14 +38,15 @@ class AudioManager {
     this.endbossSound.play();
   }
 
-  
+
   /**
    * Mutes or unmutes all sounds.
    * @param {boolean} muted - If true, mutes all sounds. If false, unmutes all sounds.
    */
-  setAllSoundsMuted(muted) {
+   setAllSoundsMuted(muted) {
     let sounds = [
       this.bottleSound,
+      this.coinSound,
       this.backgroundMusic,
       this.endbossMusic,
       this.gunshotSound,

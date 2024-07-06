@@ -11,7 +11,6 @@ class BabyChicken extends MovableObject {
   
   IMAGES_DEAD = ["img/3_enemies_chicken/chicken_small/2_dead/dead.png"];
   
-  
   constructor() {
     super().loadImage("img/3_enemies_chicken/chicken_small/1_walk/1_w.png");
     this.loadImages(this.IMAGES_WALKING);
@@ -20,47 +19,48 @@ class BabyChicken extends MovableObject {
     this.speed = 0.5 + Math.random() * 1;
   }
 
-
- /**
+ 
+  /**
    * Animates the baby chicken's movement and walking animation.
    */
- animate() {
-  this.world.addInterval(setInterval(() => {
-    if (!this.isEnemyDead) {
-      this.moveLeft();
+  animate() {
+    this.world.addInterval(setInterval(() => {
+      if (!this.isEnemyDead) {
+        this.moveLeft();
+      }
+    }, 1000 / 60));
+
+    this.world.addInterval(setInterval(() => {
+      if (!this.isEnemyDead) {
+        this.playAnimation(this.IMAGES_WALKING);
+      }
+    }, 200));
+  }
+
+  
+  /**
+   * Handles the death of the baby chicken.
+   * Plays the death sound, changes the image, and removes the chicken from the world after a delay.
+   */
+  die() {
+    this.world.audioManager.babyChickenSound.play();
+    this.isEnemyDead = true;
+    this.loadImage(this.IMAGES_DEAD[0]);
+    setTimeout(() => {
+      this.removeFromWorld();
+    }, 1000);
+  }
+
+  
+  /**
+   * Removes the baby chicken from the world.
+   * Finds its index in the world's list of enemies and removes it.
+   */
+  removeFromWorld() {
+    const index = this.world.level.enemies.indexOf(this);
+    if (index > -1) {
+      this.world.level.enemies.splice(index, 1);
     }
-  }, 1000 / 60));
-
-  this.world.addInterval(setInterval(() => {
-    if (!this.isEnemyDead) {
-      this.playAnimation(this.IMAGES_WALKING);
-    }
-  }, 200));
-}
-
-
-/**
- * Handles the death of the baby chicken.
- * Plays the death sound, changes the image, and removes the chicken from the world after a delay.
- */
-die() {
-  this.world.audioManager.babyChickenSound.play();
-  this.isEnemyDead = true;
-  this.loadImage(this.IMAGES_DEAD[0]);
-  setTimeout(() => {
-    this.removeFromWorld();
-  }, 1000);
-}
-
-
-/**
- * Removes the baby chicken from the world.
- * Finds its index in the world's list of enemies and removes it.
- */
-removeFromWorld() {
-  const index = this.world.level.enemies.indexOf(this);
-  if (index > -1) {
-    this.world.level.enemies.splice(index, 1);
   }
 }
-}
+

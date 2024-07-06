@@ -48,27 +48,27 @@ class ThrowableObject extends MovableObject {
   /**
    * Throws the bottle in the specified direction.
    */
-  throw() {
-    this.speedY = 30; // Initial throwing speed
-    this.applyBottleGravity(); // Apply gravity to the bottle
-    this.throwSound = this.createAudio("audio/spin.mp3"); // Play throw sound
+   throw() {
+    this.speedY = 30;
+    this.applyBottleGravity(); 
+    this.throwSound = this.createAudio("audio/spin.mp3");
     this.throwInterval = setInterval(() => {
-      this.x += this.direction === "right" ? 9 : -9; // Move the bottle horizontally
+      this.x += this.direction === "right" ? 9 : -9; 
     }, 25);
-    this.animateThrowingBottle(); // Start animation for throwing the bottle
+    this.animateThrowingBottle(); 
   }
 
 
   /**
    * Animates the bottle while it is being thrown.
    */
-  animateThrowingBottle() {
+   animateThrowingBottle() {
     const intervalId = setInterval(() => {
       if (this.isUsed) {
         clearInterval(intervalId);
-        this.animateSplashingBottle(); // If bottle is used, animate splashing
+        this.animateSplashingBottle();
       } else {
-        this.playAnimation(this.BOTTLE_ROTATION_IMAGES); // Otherwise, rotate the bottle
+        this.playAnimation(this.BOTTLE_ROTATION_IMAGES);
       }
     }, 100);
   }
@@ -78,7 +78,13 @@ class ThrowableObject extends MovableObject {
    * Removes the bottle from the game world.
    */
   remove() {
-    this.world.removeObject(this); // Remove the bottle from the world
+    this.world.removeObject(this);
+  }
+
+
+  animateSplashingBottle() {
+    this.prepareForSplash();
+    this.playSplashAnimation();
   }
 
 
@@ -86,11 +92,11 @@ class ThrowableObject extends MovableObject {
    * Prepares the bottle for splashing animation.
    */
   prepareForSplash() {
-    this.pauseSound(this.throwSound); // Pause the throw sound
-    this.splashSound = this.createAudio("audio/splash.mp3"); // Play splash sound
-    clearInterval(this.throwInterval); // Clear throw interval
+    this.pauseSound(this.throwSound); 
+    this.splashSound = this.createAudio("audio/splash.mp3");
+    clearInterval(this.throwInterval);
     this.throwInterval = null;
-    this.loadImages(this.BOTTLE_SPLASHING_IMAGES); // Load splashing images
+    this.loadImages(this.BOTTLE_SPLASHING_IMAGES); 
   }
 
 
@@ -104,7 +110,7 @@ class ThrowableObject extends MovableObject {
     const intervalId = setInterval(() => {
       if (currentFrame >= totalFrames) {
         clearInterval(intervalId);
-        this.remove(); // If animation is complete, remove the bottle
+        this.remove();
       } else {
         this.playAnimationFrame(this.BOTTLE_SPLASHING_IMAGES[currentFrame]); // Play each frame of splashing animation
         currentFrame++;
@@ -117,8 +123,8 @@ class ThrowableObject extends MovableObject {
    * Plays a single animation frame with the specified image path.
    * @param {string} imagePath - The path of the image to display.
    */
-  playAnimationFrame(imagePath) {
-    this.img = this.imageCache[imagePath]; // Set the current image to the specified frame
+   playAnimationFrame(imagePath) {
+    this.img = this.imageCache[imagePath];
   }
 
 
@@ -127,7 +133,7 @@ class ThrowableObject extends MovableObject {
    */
   onGround() {
     if (!this.isUsed) {
-      this.markAsUsed(); // Mark the bottle as used when it reaches the ground
+      this.markAsUsed();
     }
   }
 
@@ -136,7 +142,7 @@ class ThrowableObject extends MovableObject {
    * Marks the bottle as used.
    */
   markAsUsed() {
-    this.isUsed = true; // Set the bottle as used
+    this.isUsed = true;
   }
 
 
@@ -146,22 +152,22 @@ class ThrowableObject extends MovableObject {
    * @returns {HTMLAudioElement} The created audio element.
    */
   createAudio(src) {
-    const audio = new Audio(src); // Create new audio element
+    const audio = new Audio(src); 
     if (this.world.audioManager.backgroundMusic.muted) {
-      audio.muted = true; // Mute audio if background music is muted
+      audio.muted = true;
     }
-    audio.play(); // Play the audio
-    return audio; // Return the audio element
+    audio.play();
+    return audio;
   }
-
+  
 
   /**
    * Plays the specified sound if it is paused.
    * @param {HTMLAudioElement} sound - The audio element to play.
    */
-  playSound(sound) {
+   playSound(sound) {
     if (sound.paused) {
-      sound.play(); // Play the sound if it is paused
+      sound.play();
     }
   }
 
@@ -172,12 +178,8 @@ class ThrowableObject extends MovableObject {
    */
   pauseSound(sound) {
     if (!sound.paused) {
-      sound.pause(); // Pause the sound if it is playing
-      sound.currentTime = 0; // Reset the sound to the beginning
+      sound.pause(); 
+      sound.currentTime = 0; 
     }
   }
 }
-
-
-
-

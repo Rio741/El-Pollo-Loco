@@ -5,20 +5,63 @@ let i = 1;
 
 
 /**
- * Starts the game by initializing the level, hiding the start screen,
- * displaying the sound button, and setting up the game world.
+ * Starts the game by initializing the level, setting up the game screen, 
+ * creating a new game world, and handling sound settings.
  */
 function startGame() {
   initLevel();
-  let canvas = document.getElementById("canvas");
+  setupGameScreen();
+  const canvas = document.getElementById("canvas");
+  canvas.style.display = "block";
+  world = new World(canvas, keyboard);
+  handleSoundSettings();
+}
+
+
+/**
+ * Sets up the game screen by hiding specific elements and showing the sound button.
+ */
+function setupGameScreen() {
+  document.getElementById("game-over-img").style.display = "none";
+  document.getElementById("win-img").style.display = "none";
+  document.getElementById("restart-btn").style.display = "none";
+  document.getElementById("home-btn").style.display = "none";
   document.getElementById("startScreen").style.display = "none";
   document.getElementById("sound-btn").style.display = "flex";
   document.getElementById("play-btn").style.display = "none";
   document.getElementById("privacy-policity-btn").style.display = "none";
   document.getElementById("legal-notice-btn").style.display = "none";
   document.getElementById("info-btn").style.display = "none";
-  canvas.style.display = "block";
-  world = new World(canvas, keyboard);
+}
+
+
+/**
+ * Handles sound settings based on the user's preference stored in localStorage.
+ * Turns sound on or off accordingly.
+ */
+function handleSoundSettings() {
+  const isMuted = localStorage.getItem('isMuted') === 'true';
+  if (isMuted) {
+    soundOff();
+  } else {
+    soundOn();
+  }
+}
+
+
+/**
+ * Sets up the home screen by hiding game-specific elements and showing the main menu buttons.
+ */
+function setupHomeScreen() {
+  document.getElementById("game-over-img").style.display = "none";
+  document.getElementById("win-img").style.display = "none";
+  document.getElementById("restart-btn").style.display = "none";
+  document.getElementById("home-btn").style.display = "none";
+  document.getElementById("startScreen").style.display = "flex";
+  document.getElementById("play-btn").style.display = "flex";
+  document.getElementById("privacy-policity-btn").style.display = "flex";
+  document.getElementById("legal-notice-btn").style.display = "flex";
+  document.getElementById("info-btn").style.display = "flex";
 }
 
 
@@ -49,6 +92,7 @@ function soundOff() {
   if (world && world.audioManager) {
     world.audioManager.setAllSoundsMuted(true);
   }
+  localStorage.setItem('isMuted', 'true');
 }
 
 
@@ -62,14 +106,7 @@ function soundOn() {
   if (world && world.audioManager) {
     world.audioManager.setAllSoundsMuted(false);
   }
-}
-
-
-/**
- * Redirects the user to the home page.
- */
-function goHome() {
-  window.location.href = "index.html";
+  localStorage.setItem('isMuted', 'false');
 }
 
 

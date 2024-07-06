@@ -7,7 +7,6 @@ class Bottle extends MovableObject {
     "img/6_salsa_bottle/2_salsa_bottle_on_ground.png",
   ];
   
-  
   constructor(x, y) {
     super();
     this.loadImage("img/6_salsa_bottle/1_salsa_bottle_on_ground.png");
@@ -25,7 +24,7 @@ class Bottle extends MovableObject {
     super.animate(this.IMAGES_BOTTLE);
   }
 
-
+  
   /**
    * Handles collision with the bottle.
    * Increments the character's bottle count, updates the bottle status bar,

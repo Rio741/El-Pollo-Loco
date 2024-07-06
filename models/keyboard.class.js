@@ -21,7 +21,6 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-
 window.addEventListener("keyup", (e) => {
   if (e.keyCode == 39) {
     keyboard.RIGHT = false;

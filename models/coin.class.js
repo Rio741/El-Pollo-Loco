@@ -12,29 +12,27 @@ class Coin extends MovableObject {
     this.y = y;
   }
 
-  
-/**
+
+  /**
    * Animates the coin by cycling through its images.
    */
-animate() {
-  super.animate(this.IMAGES_COIN); // Animate using the coin images
-}
-
-
-/**
- * Handles collision with the character.
- * @param {World} world - The game world object.
- * @param {number} index - The index of the coin in the items array.
- */
-handleCollision(world, index) {
-  world.character.incrementCoinCount();
-  let coinPercentage = (world.character.collectedCoins / world.level.totalCoins) * 100;
-  world.coinStatusBar.setPercentage(coinPercentage);
-  world.level.items.splice(index, 1);
-  let coinSound = new Audio("audio/coin.mp3");
-  coinSound.play();
-  if (world.audioManager.backgroundMusic.muted) {
-    coinSound.muted = true;
+  animate() {
+    super.animate(this.IMAGES_COIN);
   }
-}
+
+
+  /**
+   * Handles collision with the character.
+   * @param {World} world - The game world object.
+   * @param {number} index - The index of the coin in the items array.
+   */
+  handleCollision(world, index) {
+    if (world.character.collectedCoins < 5) {
+      world.character.incrementCoinCount();
+      let coinPercentage = world.character.collectedCoins * 20;
+      world.coinStatusBar.setPercentage(coinPercentage);
+      world.level.items.splice(index, 1);
+      world.audioManager.coinSound.play();
+    }
+  }
 }
