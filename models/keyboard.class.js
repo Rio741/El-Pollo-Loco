@@ -5,6 +5,7 @@ class Keyboard {
   D = false;
 }
 
+
 window.addEventListener("keydown", (e) => {
   if (e.keyCode == 39) {
     keyboard.RIGHT = true;
@@ -20,6 +21,7 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+
 window.addEventListener("keyup", (e) => {
   if (e.keyCode == 39) {
     keyboard.RIGHT = false;
@@ -34,6 +36,7 @@ window.addEventListener("keyup", (e) => {
     keyboard.D = false;
   }
 });
+
 
 //for Mobile-Version
 

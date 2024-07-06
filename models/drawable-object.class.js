@@ -7,15 +7,26 @@ class DrawableObject {
   height;
   width;
 
-  loadImage(path) {
+
+   /**
+   * Loads an image from the specified path.
+   * @param {string} path - The path to the image file.
+   */
+   loadImage(path) {
     this.img = new Image();
     this.img.src = path;
   }
 
+
+  /**
+   * Draws the object onto the canvas context.
+   * @param {CanvasRenderingContext2D} ctx - The canvas 2D rendering context.
+   */
   draw(ctx) {
     ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
   }
 
+  
   /*
   drawFrame(ctx) {
     if (this instanceof Character) {
@@ -71,11 +82,16 @@ class DrawableObject {
   }
   */
 
-  loadImages(arr) {
-    arr.forEach((path) => {
-      let img = new Image();
-      img.src = path;
-      this.imageCache[path] = img;
-    });
-  }
+
+ /**
+ * Loads multiple images from an array of paths and stores them in the image cache.
+ * @param {string[]} arr - Array of paths to the images.
+ */
+loadImages(arr) {
+  arr.forEach((path) => {
+    let img = new Image();
+    img.src = path;
+    this.imageCache[path] = img;
+  });
+}
 }

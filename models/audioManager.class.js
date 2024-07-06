@@ -15,11 +15,20 @@ class AudioManager {
     this.babyChickenSound = new Audio("audio/baby-chicken.mp3");
   }
 
+
+  /**
+   * Plays the background music in a loop.
+   */
   playBackgroundMusic() {
     this.backgroundMusic.loop = true;
     this.backgroundMusic.play();
   }
 
+
+  /**
+   * Switches music to the endboss music, pauses background music,
+   * and plays gunshot and endboss sounds.
+   */
   switchToEndbossMusic() {
     this.backgroundMusic.pause();
     this.endbossMusic.loop = true;
@@ -28,6 +37,11 @@ class AudioManager {
     this.endbossSound.play();
   }
 
+  
+  /**
+   * Mutes or unmutes all sounds.
+   * @param {boolean} muted - If true, mutes all sounds. If false, unmutes all sounds.
+   */
   setAllSoundsMuted(muted) {
     let sounds = [
       this.bottleSound,

@@ -10,6 +10,11 @@ class Cloud extends MovableObject {
     this.x = Math.random() * 300 + startX;
   }
 
+
+  /**
+   * Animates the cloud by continuously moving it to the left.
+   * Uses an interval to update the position.
+   */
   animate() {
     this.world.addInterval(setInterval(() => {
       this.moveLeft();
