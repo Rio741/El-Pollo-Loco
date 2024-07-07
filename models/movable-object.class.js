@@ -238,4 +238,27 @@ class MovableObject extends DrawableObject {
       }
     });
   }
+
+  
+  /**
+   * Plays the specified sound if it is paused.
+   * @param {HTMLAudioElement} sound - The audio element to play.
+   */
+  playSound(sound) {
+    if (sound.paused) {
+      sound.play();
+    }
+  }
+
+  
+  /**
+   * Pauses the specified sound if it is playing.
+   * @param {HTMLAudioElement} sound - The audio element to pause.
+   */
+  pauseSound(sound) {
+    if (!sound.paused) {
+      sound.pause(); 
+      sound.currentTime = 0; 
+    }
+  }
 }

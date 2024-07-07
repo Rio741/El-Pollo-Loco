@@ -25,6 +25,7 @@ class ThrowableObject extends MovableObject {
     this.height = 70;
     this.width = 70; 
     this.isUsed = false;
+    this.hasSplashed = false;
     this.throwInterval = null;
     this.throw();
   }
@@ -51,7 +52,7 @@ class ThrowableObject extends MovableObject {
    throw() {
     this.speedY = 30;
     this.applyBottleGravity(); 
-    this.throwSound = this.createAudio("audio/spin.mp3");
+    this.playSound(this.world.audioManager.throwSound)
     this.throwInterval = setInterval(() => {
       this.x += this.direction === "right" ? 9 : -9; 
     }, 25);
@@ -92,11 +93,12 @@ class ThrowableObject extends MovableObject {
    * Prepares the bottle for splashing animation.
    */
   prepareForSplash() {
-    this.pauseSound(this.throwSound); 
-    this.splashSound = this.createAudio("audio/splash.mp3");
+    this.pauseSound(this.world.audioManager.throwSound); 
+    this.playSound(this.world.audioManager.splashSound);
     clearInterval(this.throwInterval);
     this.throwInterval = null;
     this.loadImages(this.BOTTLE_SPLASHING_IMAGES); 
+    this.hasSplashed = true;
   }
 
 
@@ -143,43 +145,5 @@ class ThrowableObject extends MovableObject {
    */
   markAsUsed() {
     this.isUsed = true;
-  }
-
-
-  /**
-   * Creates an audio element with the specified source and plays it.
-   * @param {string} src - The path of the audio file.
-   * @returns {HTMLAudioElement} The created audio element.
-   */
-  createAudio(src) {
-    const audio = new Audio(src); 
-    if (this.world.audioManager.backgroundMusic.muted) {
-      audio.muted = true;
-    }
-    audio.play();
-    return audio;
-  }
-  
-
-  /**
-   * Plays the specified sound if it is paused.
-   * @param {HTMLAudioElement} sound - The audio element to play.
-   */
-   playSound(sound) {
-    if (sound.paused) {
-      sound.play();
-    }
-  }
-
-  
-  /**
-   * Pauses the specified sound if it is playing.
-   * @param {HTMLAudioElement} sound - The audio element to pause.
-   */
-  pauseSound(sound) {
-    if (!sound.paused) {
-      sound.pause(); 
-      sound.currentTime = 0; 
-    }
   }
 }

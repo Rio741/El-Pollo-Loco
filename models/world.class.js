@@ -193,11 +193,11 @@ checkEndbossStartWalking() {
  * and enough time has passed since the last throw, a new throwable object (bottle) is created and added to the game.
  */
 checkThrowObjects() {
-  const now = Date.now();
+  const allBottlesSplashed = this.throwableObjects.every(bottle => bottle.hasSplashed);
   if (
     this.keyboard.D &&
     this.character.collectedBottles > 0 &&
-    now - this.lastThrowTime >= 700
+    allBottlesSplashed
   ) {
     let bottleDirection = this.character.otherDirection ? "left" : "right";
     let bottle = new ThrowableObject(
@@ -209,7 +209,6 @@ checkThrowObjects() {
     let bottlePercentage = (this.character.collectedBottles / 6) * 100;
     this.character.collectedBottles--;
     this.bottleStatusBar.setPercentage(bottlePercentage);
-    this.lastThrowTime = now;
     this.character.sleepAnimationPlayed = false;
   }
 }

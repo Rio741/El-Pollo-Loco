@@ -2,6 +2,8 @@ class AudioManager {
   constructor() {
     this.bottleSound = new Audio("audio/bottle.mp3");
     this.coinSound = new Audio("audio/coin.mp3");
+    this.splashSound = new Audio("audio/splash.mp3");
+    this.throwSound = new Audio("audio/spin.mp3");
     this.backgroundMusic = new Audio("audio/background.mp3");
     this.endbossMusic = new Audio("audio/background-endboss.mp3");
     this.gunshotSound = new Audio("audio/gunshot.mp3");
@@ -47,6 +49,8 @@ class AudioManager {
     let sounds = [
       this.bottleSound,
       this.coinSound,
+      this.splashSound,
+      this.throwSound,
       this.backgroundMusic,
       this.endbossMusic,
       this.gunshotSound,

@@ -103,7 +103,6 @@ loadAllImages() {
  */
 animate() {
   this.animateMovement();
-  this.animateDead();
   this.animateSleep();
   this.animateLongSleep();
   this.animateHurt();
@@ -179,11 +178,13 @@ updateCameraPosition() {
  * Animates the character's death state.
  */
 animateDead() {
-  setInterval(() => {
-    if (this.isDead()) {
-      this.playAnimation(this.IMAGES_DEAD);
-    }
+  this.deadAnimationInterval = setInterval(() => {
+    this.playAnimation(this.IMAGES_DEAD);
   }, 100);
+
+  setTimeout(() => {
+    clearInterval(this.deadAnimationInterval);
+  }, 3000);
 }
 
 
@@ -203,6 +204,8 @@ animateSleep() {
           sleepAnimationIndex = 0;
         }
       }
+    } else {
+      sleepAnimationIndex = 0;
     }
   }, 400);
   this.world.addInterval(intervalId);
@@ -341,7 +344,10 @@ isHurt() {
  */
 isDead() {
   if (this.energy === 0) {
-    this.world.loseGame();
+    if (!this.deadAnimationInterval) {
+      this.animateDead();
+      this.world.loseGame();
+    }
     return true;
   }
   return false;
@@ -357,28 +363,5 @@ isSleep() {
   let timePassed = new Date().getTime() - this.lastMoved;
   timePassed = timePassed / 1000;
   return timePassed > 1;
-}
-
-
-/**
- * Plays a sound if it's paused.
- * @param {Audio} sound - The sound object to play.
- */
-playSound(sound) {
-  if (sound.paused) {
-    sound.play();
-  }
-}
-
-
-/**
- * Pauses a sound if it's playing.
- * @param {Audio} sound - The sound object to pause.
- */
-pauseSound(sound) {
-  if (!sound.paused) {
-    sound.pause();
-    sound.currentTime = 0;
-  }
 }
 }
